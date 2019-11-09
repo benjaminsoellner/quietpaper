@@ -2,3 +2,4 @@ venv*/**
 output.bmp
 secret
 secret/**
+**/__pycache__/**
