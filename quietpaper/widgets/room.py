@@ -13,18 +13,27 @@ class RoomWidget:
 
     def initialize(self):
         self.tado_connection.init_home()
+        self.window_last_open = None
         
     def retrieve(self, cycle):
         data = self.tado_connection.query_home("zones/%d/state" % self.zone)
         self.data = data
-        self.temperature = data["sensorDataPoints"]["insideTemperature"]["celsius"]
-        self.temp_setting = None if data["setting"]["power"] == "OFF" else data["setting"]["temperature"]["celsius"]
-        self.humidity = data["sensorDataPoints"]["humidity"]["percentage"]
-        self.window_open = data["openWindow"] is not None
-        if self.window_open:
-            self.window_last_open = datetime.datetime.now()
+        if "sensorDataPoints" in data:
+            self.temperature = data["sensorDataPoints"]["insideTemperature"]["celsius"]
+            self.humidity = data["sensorDataPoints"]["humidity"]["percentage"]
         else:
-            self.window_last_open = None
+            self.temperature = None
+            self.humidity = None
+        if "setting" in data:
+            self.temp_setting = None if data["setting"]["power"] == "OFF" else data["setting"]["temperature"]["celsius"]
+        else:
+            self.temp_setting = None
+        if "openWindow" in data:
+            self.window_open = data["openWindow"] is not None
+            if self.window_open:
+                self.window_last_open = datetime.datetime.now()
+        else:
+            self.window_open = False
         
     def get_retrieve_rate(self, cycle):
         return 5
@@ -53,9 +62,11 @@ class RoomWidget:
         display.erase(x, y, x+290, y+32)
         display.bmp(x, y, room_bmp)
         if window_bmp is not None:
-            display.bmp(x+37, y, window_bmp)
-        display.text(x+76, y+7, "%d°C" % self.temperature)
-        if arrow_bmp is not None:
-            display.bmp(x+125, y, arrow_bmp)
-        humidity_too_high = self.humidity > self.max_humidity
-        display.text(x+167, y+7, "%d%%" % self.humidity, is_red=humidity_too_high)
+            display.bmp(x+37, y, window_bmp, is_red=self.window_open)
+        if self.temperature is not None:
+            display.text(x+76, y+7, "%d°C" % self.temperature)
+            if arrow_bmp is not None:
+                display.bmp(x+125, y, arrow_bmp)
+        if self.humidity is not None:
+            humidity_too_high = self.humidity > self.max_humidity
+            display.text(x+167, y+7, "%d%%" % self.humidity, is_red=humidity_too_high)

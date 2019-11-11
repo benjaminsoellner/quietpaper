@@ -16,6 +16,7 @@ from quietpaper.widgets.cal import CalendarWidget
 from quietpaper.widgets.seperator import Seperator
 from quietpaper.screens.mock import MockScreen
 from quietpaper.screens.epaper import EpaperScreen
+from quietpaper.screens.gdrive import GdriveScreen
 from quietpaper.controller import Controller
 from quietpaper.display import Display
 
@@ -26,7 +27,7 @@ def secret(key, default=""):
     return os.environ.get(key, secrets.get(key, default))
 
 # Office widget
-office_auth_file = secret("QP_OFFICE_AUTH_FILE", "secret/homeprojects-d5131777a160.json")
+office_auth_file = secret("QP_OFFICE_AUTH_FILE")
 office_sheet_name = "goodmorning"
 office_data_range_benj = "B1"
 office_data_range_sara = "B2"
@@ -116,11 +117,17 @@ seperator_y1 = seperator_y2 = 62
 seperator = Seperator(seperator_x1, seperator_y1, seperator_x2, seperator_y2)
 
 # MockScreen
-mock_debug_bmp = "output.bmp"
-mock = MockScreen(mock_debug_bmp)
+mock_png = "output/output.png"
+mock = MockScreen(mock_png)
 
 # EpaperScreen
 epaper = EpaperScreen()
+
+# GdriveScreen
+gdrive_auth_file = secret("QP_GDRIVE_AUTH_FILE")
+gdrive_file_id = secret("QP_GDRIVE_FILE_ID")
+gdrive_file_locally = mock_png
+gdrive = GdriveScreen(gdrive_auth_file, gdrive_file_id, gdrive_file_locally)
 
 # Display 
 display_height = EPD_HEIGHT
@@ -128,7 +135,6 @@ display_width = EPD_WIDTH
 display = Display(display_width, display_height)
 
 # Controller
-debug_bmp = 'output.bmp'
 controller = Controller(display)
 controller.register_widget(office_sara)
 controller.register_widget(office_benj)
@@ -144,4 +150,5 @@ controller.register_widget(allergy)
 controller.register_widget(seperator)
 controller.register_widget(calendar)
 controller.register_screen(mock)
+controller.register_screen(gdrive)
 controller.register_screen(epaper)

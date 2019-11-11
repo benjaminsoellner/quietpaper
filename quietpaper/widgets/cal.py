@@ -1,7 +1,6 @@
 import datetime
 import dateutil.parser
 from oauth2client.service_account import ServiceAccountCredentials
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from PIL import ImageFont
 

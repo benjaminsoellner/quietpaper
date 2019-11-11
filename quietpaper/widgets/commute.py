@@ -57,16 +57,33 @@ class CommuteWidget:
         self.routes = []
         routes_found = 0
         trials = 0
-        while routes_found < self.num_routes and trials < 10:
+        too_late = False
+        fallback_route = None
+        while routes_found < self.num_routes and trials < 10 and not too_late:
             trials += 1
             data = self.gmaps.directions(self.from_loc, self.to_loc, mode="transit", departure_time=start_time)
             routes = [parse_route(route["legs"]) for route in data]
             self.data.append(data)
             for route in routes:
                 if route is not None and route["train"] is not None:
-                    routes_found += 1
-                    self.routes.append(route)
-                    start_time = route["bus"] if route["bus"] is not None else route["train"]
+                    if routes_found == self.num_routes-1:
+                        if sum([1 for route in self.routes+[route] if route["bus"] is not None]) > 0:
+                            append_route = True
+                        else:
+                            fallback_route = route
+                            append_route = False
+                    else:
+                        append_route = True
+                    if append_route:
+                        routes_found += 1
+                        self.routes.append(route)
+                    new_start_time = route["bus"] if route["bus"] is not None else route["train"]
+                    if new_start_time != start_time:
+                        start_time = new_start_time
+                    else:
+                        too_late = True
+        if routes_found < self.num_routes and fallback_route is not None:
+            self.routes.append(fallback_route)
     
     def get_retrieve_rate(self, cycle):
         return 5 * (6 if cycle.is_slow else 1)
