@@ -2,4 +2,5 @@ venv*/**
 output.bmp
 secret
 secret/**
+log/qp.log
 **/__pycache__/**
