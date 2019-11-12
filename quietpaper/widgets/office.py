@@ -100,7 +100,7 @@ class OfficeWidget:
             return event < soon
 
     def get_retrieve_rate(self, cycle):
-        return 60
+        return 30
     
     def get_render_rate(self, cycle):
         return 1
