@@ -4,6 +4,7 @@ import time
 import datetime
 from dateutil import tz
 from oauth2client.service_account import ServiceAccountCredentials
+from quietpaper import logger
 
 QP_OFFICE_WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 QP_OFFICE_LOOKBEHIND_HOURS = 2
@@ -26,40 +27,47 @@ class OfficeWidget:
         self.y = y
 
     def initialize(self):
-        pass
+        self.is_error = True
+        self.ordered_times = []
+        self.published = None
+        self.flags = {}
     
     def retrieve(self, cycle):
         scope = ['https://spreadsheets.google.com/feeds',
                 'https://www.googleapis.com/auth/drive']
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
-        gsheets = gspread.authorize(credentials)
-        workbook = gsheets.open(self.sheet_name).get_worksheet(0)
-        value = workbook.acell(self.data_cell).value
-        if value is None or value == "":
-            self.data = None
-        else:
-            self.data = json.loads(value)
-        if self.data is None or "Error" in self.data:
-            self.is_error = (self.data is not None and "Error" in self.data)
-            self.published = None
-            self.ordered_times = None
-            self.flags = None
-        else:
-            self.is_error = False
-            self.published = self.data["published"]
-            self.ordered_times = []
-            self.flags = {}
-            for ymd in self.data["day_starts"]:
-                hms = self.data["day_starts"][ymd][0]
-                utc = datetime.datetime.strptime("%s %s" % (ymd, hms), "%Y-%m-%d %H:%M:%S")
-                utc = utc.replace(tzinfo=tz.tzutc())
-                event = utc.astimezone(tz.tzlocal())
-                recently = datetime.datetime.now(tz.tzlocal()) - datetime.timedelta(hours=self.lookbehind_hours)
-                latest = datetime.datetime.now(tz.tzlocal()) + datetime.timedelta(days=self.lookahead_days)
-                if event > recently and event < latest:
-                    self.ordered_times.append(event)
-                    self.flags[event] = self.data["day_starts"][ymd][1]
-            self.ordered_times.sort()
+        try:
+            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
+            gsheets = gspread.authorize(credentials)
+            workbook = gsheets.open(self.sheet_name).get_worksheet(0)
+            value = workbook.acell(self.data_cell).value
+            if value is None or value == "":
+                self.data = None
+            else:
+                self.data = json.loads(value)
+            if self.data is None or "Error" in self.data:
+                self.is_error = (self.data is not None and "Error" in self.data)
+                self.published = None
+                self.ordered_times = None
+                self.flags = None
+            else:
+                self.is_error = False
+                self.published = self.data["published"]
+                self.ordered_times = []
+                self.flags = {}
+                for ymd in self.data["day_starts"]:
+                    hms = self.data["day_starts"][ymd][0]
+                    utc = datetime.datetime.strptime("%s %s" % (ymd, hms), "%Y-%m-%d %H:%M:%S")
+                    utc = utc.replace(tzinfo=tz.tzutc())
+                    event = utc.astimezone(tz.tzlocal())
+                    recently = datetime.datetime.now(tz.tzlocal()) - datetime.timedelta(hours=self.lookbehind_hours)
+                    latest = datetime.datetime.now(tz.tzlocal()) + datetime.timedelta(days=self.lookahead_days)
+                    if event > recently and event < latest:
+                        self.ordered_times.append(event)
+                        self.flags[event] = self.data["day_starts"][ymd][1]
+                self.ordered_times.sort()
+        except Exception as e: 
+            logger.warning("Cannot retrieve OfficeWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+
 
     def get_text(self):
         if self.is_error:

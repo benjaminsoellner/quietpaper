@@ -24,7 +24,9 @@ set -- "${positional[@]}"
 (
     pushd $here >/dev/null 2>&1
     source venv-quietpaper/bin/activate
-    PYTHONPATH=$here:$PYTHONPATH stdbuf -oL python3 quietpaper.py $@
+    while true ; do
+        PYTHONPATH=$here:$PYTHONPATH stdbuf -oL python3 quietpaper.py $@
+    done
     exit $?
     popd >/dev/null 2>&1
 )

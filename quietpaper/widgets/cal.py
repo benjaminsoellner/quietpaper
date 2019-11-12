@@ -3,6 +3,7 @@ import dateutil.parser
 from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from PIL import ImageFont
+from quietpaper import logger
 
 QP_CALENDAR_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
 
@@ -23,14 +24,17 @@ class CalendarWidget:
     def retrieve(self, cycle):
         scope = ['https://www.googleapis.com/auth/calendar.readonly']
         credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
-        service = build('calendar', 'v3', credentials=credentials)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
-        self.data = service.events().list(calendarId=self.calendar_id, timeMin=now,
-                                                maxResults=10, singleEvents=True, orderBy='startTime').execute()
-        self.events = []
-        for item in self.data.get('items', []):
-            start = item['start'].get('dateTime', item['start'].get('date'))
-            self.events.append((dateutil.parser.parse(start), item['summary']))
+        try:
+            service = build('calendar', 'v3', credentials=credentials)
+            self.data = service.events().list(calendarId=self.calendar_id, timeMin=now,
+                                                    maxResults=10, singleEvents=True, orderBy='startTime').execute()
+            self.events = []
+            for item in self.data.get('items', []):
+                start = item['start'].get('dateTime', item['start'].get('date'))
+                self.events.append((dateutil.parser.parse(start), item['summary']))
+        except Exception as e:
+            logger.warning("Cannot retrieve CalWidget: " +  (e.message if hasattr(e, 'message') else type(e).__name__))
         
     def get_retrieve_rate(self, cycle):
         return 15

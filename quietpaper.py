@@ -1,4 +1,3 @@
-import daemon
 import sys
 from quietpaper.config import controller as QPC
 

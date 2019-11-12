@@ -2,6 +2,7 @@ from apiclient.http import MediaFileUpload
 from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from apiclient import errors
+from quietpaper import logger
 import numpy as np
 
 class GdriveScreen:
@@ -22,8 +23,8 @@ class GdriveScreen:
             media_body = MediaFileUpload(self.file_locally, resumable=True)
             updated_file = service.files().update(
                 fileId=self.file_id, media_body=media_body).execute()
-        except:
-            logging.error('Error while uploading display image to Google Drive: %s' % error)
+        except Exception as e: 
+            logger.warning("Cannot update image on GdriveScreen: " + (e.message if hasattr(e, 'message') else type(e).__name__))
 
     def clear(self, display):
         pass

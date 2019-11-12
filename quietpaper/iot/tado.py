@@ -1,3 +1,4 @@
+from quietpaper import logger
 import requests
 import datetime
 import json
@@ -35,15 +36,26 @@ class TadoConnection:
         return self.get_bearer_token()["access_token"]
     
     def query(self, url):
-        headers = { "Authorization": "Bearer %s" % self.get_access_token() }
-        response = requests.get(url=url, headers=headers)
-        return json.loads(response.text)
+        try:
+            headers = { "Authorization": "Bearer %s" % self.get_access_token() }
+            response = requests.get(url=url, headers=headers)
+            return json.loads(response.text)
+        except Exception as e:
+            logger.warning("Cannot query Tado: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+            return None
     
     def init_home(self):
         details = self.query("https://my.tado.com/api/v1/me")
-        self.home_id = details["homeId"]
+        if details is not None:
+            self.home_id = details["homeId"]
+            return True
+        else:
+            return False
     
     def query_home(self, url_suffix):
         if self.home_id is None:
             self.init_home()
-        return self.query("https://my.tado.com/api/v2/homes/%s/%s" % (self.home_id, url_suffix))
+        if self.home_id is not None:
+            return self.query("https://my.tado.com/api/v2/homes/%s/%s" % (self.home_id, url_suffix))
+        else:
+            return None

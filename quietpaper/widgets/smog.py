@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from quietpaper import logger
 import requests
 
 class SmogWidget:
@@ -13,8 +14,11 @@ class SmogWidget:
         pass
         
     def retrieve(self, cycle):
-        self.data = requests.get('http://www.stuttgart.de/feinstaubalarm/widget/xtrasmall').text
-        self.is_smog = BeautifulSoup(self.data, 'html.parser').find('div', {'class': 'alarm-on'})
+        try:
+            self.data = requests.get('http://www.stuttgart.de/feinstaubalarm/widget/xtrasmall').text
+            self.is_smog = BeautifulSoup(self.data, 'html.parser').find('div', {'class': 'alarm-on'})
+        except Exception as e: 
+            logger.warning("Cannot retrieve SmogWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
         
     def get_retrieve_rate(self, cycle):
         return 60*6

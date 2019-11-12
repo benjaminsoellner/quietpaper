@@ -19,9 +19,9 @@ class TrashdayWidget:
             dates = json.load(fd)
         self.dates = []
         for date in dates:
-            time = datetime.datetime.strptime(date, "%Y-%m-%d")
-            if time > now - datetime.timedelta(days=1): 
-                self.dates.append(time)
+            time = datetime.datetime.strptime(date + " 12:00", "%Y-%m-%d %H:%M")
+            if time > now: 
+                self.dates.append(time + datetime.timedelta(hours=12))
         self.dates.sort()
         
     def get_retrieve_rate(self, cycle):
@@ -34,10 +34,10 @@ class TrashdayWidget:
         x = self.x
         y = self.y
         now = datetime.datetime.now() 
-        soon = now + datetime.timedelta(days=3)
         if len(self.dates) > 0:
             display.erase(x, y, x+32, y+32)
             date = self.dates[0]
-            if date < soon:
-                is_today = (date.day == now.day and date.month == now.month and date.year == now.year)
+            is_soon = (date-now < datetime.timedelta(hours=48))
+            is_today = (date-now < datetime.timedelta(hours=12))
+            if is_soon:
                 display.bmp(x, y, "icons/date_trashday.gif", is_red=is_today)

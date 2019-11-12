@@ -1,4 +1,5 @@
 from PIL import ImageFont
+from quietpaper import logger
 import datetime
 import requests
 import json
@@ -19,16 +20,26 @@ class WeatherWidget:
         self.is_smog = False
 
     def initialize(self):
-        pass
+        self.weather = None
+        self.weather_icon = None
+        self.forecast = None
+        self.forecast_icon = None
+        self.weather_bad = False
+        self.forecast_bad = False
+        self.temp = None
         
     def retrieve(self, cycle):
-        self.weather = requests.get("http://api.openweathermap.org/data/2.5/weather", params={"appid": self.api_key, "zip": self.zip_location}).json()
-        self.forecast = requests.get("http://api.openweathermap.org/data/2.5/forecast", params={"appid": self.api_key, "zip": self.zip_location}).json()
-        self.weather_icon = QP_WEATHER_ICONS_MAP[self.weather["weather"][0]["icon"]]
-        self.forecast_icon = QP_WEATHER_ICONS_MAP[self.forecast["list"][0]["weather"][0]["icon"]]
-        self.weather_bad = self.weather_icon in QP_WEATHER_ICONS_BAD
-        self.forecast_bad = self.forecast_icon in QP_WEATHER_ICONS_BAD
-        self.temp = "%d°C" % (int(self.weather["main"]["temp"])-273)
+        try:
+            self.weather = requests.get("http://api.openweathermap.org/data/2.5/weather", params={"appid": self.api_key, "zip": self.zip_location}).json()
+            self.forecast = requests.get("http://api.openweathermap.org/data/2.5/forecast", params={"appid": self.api_key, "zip": self.zip_location}).json()
+            self.weather_icon = QP_WEATHER_ICONS_MAP[self.weather["weather"][0]["icon"]]
+            self.forecast_icon = QP_WEATHER_ICONS_MAP[self.forecast["list"][0]["weather"][0]["icon"]]
+            self.weather_bad = self.weather_icon in QP_WEATHER_ICONS_BAD
+            self.forecast_bad = self.forecast_icon in QP_WEATHER_ICONS_BAD
+            self.temp = "%d°C" % (int(self.weather["main"]["temp"])-273)
+        except Exception as e: 
+            logger.warning("Cannot retrieve WeatherWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+
         
     def get_retrieve_rate(self, cycle):
         return 30
@@ -40,7 +51,9 @@ class WeatherWidget:
         x = self.x
         y = self.y
         display.erase(x, y, x+160, y+32)
-        display.text(x+1,  y+1, self.weather_icon,  is_red=self.weather_bad,  font=QP_WEATHER_ICONS_FONT)
-        if self.forecast_icon != self.weather_icon:
+        if self.weather_icon is not None:
+            display.text(x+1,  y+1, self.weather_icon,  is_red=self.weather_bad,  font=QP_WEATHER_ICONS_FONT)
+        if self.forecast_icon is not None and self.forecast_icon != self.weather_icon:
             display.text(x+38, y+1, self.forecast_icon, is_red=self.forecast_bad, font=QP_WEATHER_ICONS_FONT)
-        display.text(x+77, y+7, self.temp)
+        if self.temp is not None:
+            display.text(x+77, y+7, self.temp)

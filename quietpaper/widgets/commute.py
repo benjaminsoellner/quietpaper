@@ -3,6 +3,7 @@ import json
 import datetime
 import pprint
 import itertools
+from quietpaper import logger
 
 QP_COMMUTE_NUM_ROUTES = 3
 
@@ -46,6 +47,8 @@ class CommuteWidget:
 
     def initialize(self):
         self.gmaps = googlemaps.client.Client(key=self.api_key)
+        self.data = []
+        self.routes = []
         
     def retrieve(self, cycle):
         start_time = datetime.datetime.now()
@@ -53,37 +56,40 @@ class CommuteWidget:
             else self.routes[0]["bus"] if self.routes[0]["bus"] is not None else self.routes[0]["train"]
         if known_departure is not None and known_departure > start_time:
             return
-        self.data = []
-        self.routes = []
-        routes_found = 0
-        trials = 0
-        too_late = False
-        fallback_route = None
-        while routes_found < self.num_routes and trials < 10 and not too_late:
-            trials += 1
-            data = self.gmaps.directions(self.from_loc, self.to_loc, mode="transit", departure_time=start_time)
-            routes = [parse_route(route["legs"]) for route in data]
-            self.data.append(data)
-            for route in routes:
-                if route is not None and route["train"] is not None:
-                    if routes_found == self.num_routes-1:
-                        if sum([1 for route in self.routes+[route] if route["bus"] is not None]) > 0:
-                            append_route = True
+        try:
+            self.data = []
+            self.routes = []
+            routes_found = 0
+            trials = 0
+            too_late = False
+            fallback_route = None
+            while routes_found < self.num_routes and trials < 10 and not too_late:
+                trials += 1
+                data = self.gmaps.directions(self.from_loc, self.to_loc, mode="transit", departure_time=start_time)
+                routes = [parse_route(route["legs"]) for route in data]
+                self.data.append(data)
+                for route in routes:
+                    if route is not None and route["train"] is not None:
+                        if routes_found == self.num_routes-1:
+                            if sum([1 for route in self.routes+[route] if route["bus"] is not None]) > 0:
+                                append_route = True
+                            else:
+                                fallback_route = route
+                                append_route = False
                         else:
-                            fallback_route = route
-                            append_route = False
-                    else:
-                        append_route = True
-                    if append_route:
-                        routes_found += 1
-                        self.routes.append(route)
-                    new_start_time = route["bus"] if route["bus"] is not None else route["train"]
-                    if new_start_time != start_time:
-                        start_time = new_start_time
-                    else:
-                        too_late = True
-        if routes_found < self.num_routes and fallback_route is not None:
-            self.routes.append(fallback_route)
+                            append_route = True
+                        if append_route:
+                            routes_found += 1
+                            self.routes.append(route)
+                        new_start_time = route["bus"] if route["bus"] is not None else route["train"]
+                        if new_start_time != start_time:
+                            start_time = new_start_time
+                        else:
+                            too_late = True
+            if routes_found < self.num_routes and fallback_route is not None:
+                self.routes.append(fallback_route)
+        except Exception as e: 
+            logger.warning("Cannot retrieve CommuteWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
     
     def get_retrieve_rate(self, cycle):
         return 5 * (6 if cycle.is_slow else 1)
