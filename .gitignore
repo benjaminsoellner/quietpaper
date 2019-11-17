@@ -3,4 +3,6 @@ output.bmp
 secret
 secret/**
 log/qp.log
+hafasglue/package-lock.json
 **/__pycache__/**
+**/node_modules/**/*

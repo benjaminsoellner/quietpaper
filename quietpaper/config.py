@@ -4,7 +4,10 @@ import json
 from quietpaper.iot.tado import TadoConnection
 from quietpaper.iot.epd7in5b import EPD_HEIGHT, EPD_WIDTH
 from quietpaper.widgets.office import OfficeWidget
-from quietpaper.widgets.commute import CommuteWidget
+from quietpaper.widgets.commute import (
+    CommuteWidget,
+    HafasCommuteStrategy
+)
 from quietpaper.widgets.room import RoomWidget
 from quietpaper.widgets.smog import SmogWidget
 from quietpaper.widgets.trashday import TrashdayWidget
@@ -41,14 +44,21 @@ office_benj = OfficeWidget(office_auth_file, office_sheet_name, office_data_rang
 office_sara = OfficeWidget(office_auth_file, office_sheet_name, office_data_range_sara, office_bmp_name_sara, office_x_sara, office_y_sara)
 
 # Commute widget
-commute_api_key_file = secret("QP_COMMUTE_API_KEY_FILE")
-commute_from_loc = "Hans-Rehn-Stift"
-commute_to_loc = "Stuttgart-Stadtmitte"
+
 commute_leave_for_bus = 5
 commute_leave_for_train = 30
 commute_x = 314
 commute_y = 228
-commute = CommuteWidget(commute_api_key_file, commute_from_loc, commute_to_loc, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
+commute_hafas_glue = "http://localhost:3333/query"
+commute_from_address = secret("QP_COMMUTE_FROM_ADDRESS")
+commute_from_latitude = secret("QP_COMMUTE_FROM_LATITUDE")
+commute_from_longitude = secret("QP_COMMUTE_FROM_LONGITUDE")
+commute_to_address = secret("QP_COMMUTE_TO_ADDRESS")
+commute_to_latitude = secret("QP_COMMUTE_TO_LATITUDE")
+commute_to_longitude = secret("QP_COMMUTE_TO_LONGITUDE")
+commute_via_station = secret("QP_COMMUTE_VIA_STATION")
+commute_hafas = HafasCommuteStrategy(commute_hafas_glue, commute_from_address, commute_from_latitude, commute_from_longitude, commute_to_address, commute_to_latitude, commute_to_longitude, commute_via_station)
+commute = CommuteWidget(commute_hafas, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
 tado_client_secrets_file = secret("QP_TADO_CLIENT_SECRETS_FILE")

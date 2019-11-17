@@ -1,4 +1,5 @@
 import datetime 
+from quietpaper import logger
 
 class RoomWidget:
 
@@ -20,26 +21,30 @@ class RoomWidget:
         self.window_open = None
         
     def retrieve(self, cycle):
-        if self.tado_connection.init_home():
-            data = self.tado_connection.query_home("zones/%d/state" % self.zone)
-            self.data = data
-            if data is not None:
-                if "sensorDataPoints" in data:
-                    self.temperature = data["sensorDataPoints"]["insideTemperature"]["celsius"]
-                    self.humidity = data["sensorDataPoints"]["humidity"]["percentage"]
-                else:
-                    self.temperature = None
-                    self.humidity = None
-                if "setting" in data:
-                    self.temp_setting = None if data["setting"]["power"] == "OFF" else data["setting"]["temperature"]["celsius"]
-                else:
-                    self.temp_setting = None
-                if "openWindow" in data:
-                    self.window_open = data["openWindow"] is not None
-                    if self.window_open:
-                        self.window_last_open = datetime.datetime.now()
-                else:
-                    self.window_open = False
+        try:
+            if self.tado_connection.init_home():
+                data = self.tado_connection.query_home("zones/%d/state" % self.zone)
+                self.data = data
+                if data is not None:
+                    if "sensorDataPoints" in data:
+                        self.temperature = data["sensorDataPoints"]["insideTemperature"]["celsius"]
+                        self.humidity = data["sensorDataPoints"]["humidity"]["percentage"]
+                    else:
+                        self.temperature = None
+                        self.humidity = None
+                    if "setting" in data:
+                        self.temp_setting = None if data["setting"]["power"] == "OFF" else data["setting"]["temperature"]["celsius"]
+                    else:
+                        self.temp_setting = None
+                    if "openWindow" in data:
+                        self.window_open = data["openWindow"] is not None
+                        if self.window_open:
+                            self.window_last_open = datetime.datetime.now()
+                    else:
+                        self.window_open = False
+        except Exception as e: 
+            logger.warning("Cannot retrieve RoomWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+
             
     def get_retrieve_rate(self, cycle):
         return 5

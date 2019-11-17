@@ -46,7 +46,7 @@ class TadoConnection:
     
     def init_home(self):
         details = self.query("https://my.tado.com/api/v1/me")
-        if details is not None:
+        if details is not None and "homeId" in details:
             self.home_id = details["homeId"]
             return True
         else:

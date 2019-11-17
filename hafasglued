@@ -10,7 +10,7 @@
 # Description:       quietpaper start-stop-daemon - Debian
 ### END INIT INFO
 
-NAME="quietpaper"
+NAME="hafasglue"
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 APPDIR="@APPDIR@"
 APPBIN="@APPBIN@"
