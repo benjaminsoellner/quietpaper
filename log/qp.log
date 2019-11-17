@@ -1,0 +1,213 @@
+
+2019-11-17 01:45:26,924 - INFO - Cycle 0...
+2019-11-17 01:45:35,293 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 181, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:45:44,917 - INFO - Cycle 0...
+2019-11-17 01:45:49,196 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 181, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:45:58,683 - INFO - Cycle 0...
+2019-11-17 01:46:03,010 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 181, in render
+    time = route["train"]
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:46:12,617 - INFO - Cycle 0...
+2019-11-17 01:46:16,886 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:46:26,319 - INFO - Cycle 0...
+2019-11-17 01:46:30,458 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:46:40,108 - INFO - Cycle 0...
+2019-11-17 01:46:44,309 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:46:53,946 - INFO - Cycle 0...
+2019-11-17 01:46:58,177 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:47:07,743 - INFO - Cycle 0...
+2019-11-17 01:47:12,015 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:47:21,704 - INFO - Cycle 0...
+2019-11-17 01:47:25,950 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:47:35,214 - INFO - Cycle 0...
+2019-11-17 01:47:39,261 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:47:48,675 - INFO - Cycle 0...
+2019-11-17 01:47:52,653 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:48:02,221 - INFO - Cycle 0...
+2019-11-17 01:48:08,235 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:53:13,211 - INFO - Cycle 0...
+2019-11-17 01:53:17,893 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 182, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:53:27,574 - INFO - Cycle 0...
+2019-11-17 01:53:31,826 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 182, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:53:43,316 - INFO - Cycle 0...
+2019-11-17 01:53:47,518 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 182, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:53:57,233 - INFO - Cycle 0...
+2019-11-17 01:54:01,457 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 182, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:54:38,342 - INFO - Cycle 0...
+2019-11-17 01:54:42,434 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:54:51,862 - INFO - Cycle 0...
+2019-11-17 01:54:55,927 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:55:05,498 - INFO - Cycle 0...
+2019-11-17 01:55:10,019 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 180, in render
+    display.text(x+46+offset, y+7, time.strftime("%H:%M"), time < deadline_bus)
+TypeError: can't compare offset-naive and offset-aware datetimes
+2019-11-17 01:58:09,619 - INFO - Cycle 0...
+2019-11-17 01:58:13,797 - ERROR - Crashed in Cycle 0.
+Traceback (most recent call last):
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 75, in loop
+    self.cycle(cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/controller.py", line 63, in cycle
+    widget.render(self.display, cycle)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/widgets/commute.py", line 181, in render
+    display.text(x+46+offset, y+7, is_red)
+  File "/home/pi/share/waveshare/sattelaecker/quietpaper/display.py", line 17, in text
+    canvas.text((x, y), text, font=self.font if font is None else font, fill=0)
+  File "/home/pi/share/waveshare/sattelaecker/venv-quietpaper/lib/python3.5/site-packages/PIL/ImageDraw.py", line 233, in text
+    mask, offset = font.getmask2(text, self.fontmode)
+  File "/home/pi/share/waveshare/sattelaecker/venv-quietpaper/lib/python3.5/site-packages/PIL/ImageFont.py", line 150, in getmask2
+    size, offset = self.font.getsize(text)
+TypeError: expected string
+2019-11-17 01:59:04,224 - INFO - Cycle 0...
+2019-11-17 02:00:05,779 - INFO - Took 61 seconds
+2019-11-17 02:00:05,781 - INFO - Cycle 1...
+2019-11-17 02:00:06,135 - INFO - Took 0 seconds
+2019-11-17 02:01:06,145 - INFO - Cycle 2...
+2019-11-17 02:01:06,358 - INFO - Took 0 seconds
