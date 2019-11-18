@@ -24,7 +24,6 @@ class MockScreen:
     
     def update(self, display, cycle):
         if self.add_date:
-            print(self.png_url)
             url = self.png_url % datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         else:
             url = self.png_url

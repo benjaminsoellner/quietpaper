@@ -184,8 +184,12 @@ class CommuteWidget:
             display.bmp(x+23, y+104, "icons/commute_city.bmp")
         offset = 0
         for route in self.routes:
-            is_bus_preferred_station = "bus_preferred_station" not in route or route["bus_preferred_station"]
-            is_train_preferred_station = "train_preferred_station" not in route or route["train_preferred_station"]
+            is_bus_preferred_station = "bus_preferred_station" not in route or \
+                route["bus_preferred_station"] is None or \
+                route["bus_preferred_station"] == True
+            is_train_preferred_station = "train_preferred_station" not in route or \
+                route["train_preferred_station"] is None or \
+                route["train_preferred_station"]
             if route["bus"] is not None:
                 time = route["bus"]
                 text = time.strftime("%H:%M")
