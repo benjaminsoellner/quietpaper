@@ -13,7 +13,8 @@ QP_COMMUTE_NUM_ROUTES = 3
 
 class HafasCommuteStrategy:
 
-    def __init__(self, hafas_glue_url, from_address, from_latitude, from_longitude, to_address, to_latitude, to_longitude, via_station):
+    def __init__(self, hafas_glue_url, from_address, from_latitude, from_longitude, to_address, to_latitude, to_longitude, 
+                    via_station, bus_preferred_station, train_preferred_station):
         self.hafas_glue_service = hafas_glue_url
         self.from_latitude = from_latitude
         self.to_latitude = to_latitude
@@ -22,37 +23,45 @@ class HafasCommuteStrategy:
         self.from_longitude = from_longitude
         self.to_longitude = to_longitude
         self.via_station = via_station
+        self.bus_preferred_station = bus_preferred_station
+        self.train_preferred_station = train_preferred_station
 
     def initialize(self, commute_widget):
         pass
 
-    @staticmethod
-    def _parse_route(route):
+    def _parse_route(self, route):
         arrival = None
-        result = {"bus": None, "train": None, "city": None}
+        result = {"bus": None, "train": None, "city": None, "bus_preferred_station": None, "train_preferred_station": None}
         for leg in route["legs"]:
             is_bus = "line" in leg and leg["line"]["mode"] == "bus"
             is_train = "line" in leg and leg["line"]["mode"] == "train"
+            is_bus_preferred_station = is_bus and leg["origin"]["name"] == self.bus_preferred_station
+            is_train_preferred_station = is_train and leg["origin"]["name"] == self.train_preferred_station
             departure = dateutil.parser.parse(leg["departure"])
             if is_bus and result["bus"] is None:
                 result["bus"] = departure
+                result["bus_preferred_station"] = is_bus_preferred_station
             elif is_train and result["train"] is None:
                 result["train"] = departure
+                result["train_preferred_station"] = is_train_preferred_station
             arrival = dateutil.parser.parse(leg["arrival"])
         if result["train"] is not None:
             result["city"] = arrival
         return result
 
     def retrieve(self, commute_widget):
-        now = datetime.datetime.now() 
-        vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(now.timestamp())), str(commute_widget.num_routes), self.via_station]
-        args = [urllib.parse.quote(val.encode('utf-8')) for val in vals]
-        suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}&via_station={}"
-        hafas_url = self.hafas_glue_service + suffix.format(*args)
-        with urllib.request.urlopen(hafas_url) as hafas_call:
-            commute_widget.data = json.loads(hafas_call.read().decode())
-            routes = [HafasCommuteStrategy._parse_route(route) for route in commute_widget.data]
-            commute_widget.routes = [route for route in routes if route["city"] is not None]
+        try:
+            now = datetime.datetime.now() 
+            vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(now.timestamp())), str(commute_widget.num_routes), self.via_station]
+            args = [urllib.parse.quote(val.encode('utf-8')) for val in vals]
+            suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}&via_station={}"
+            hafas_url = self.hafas_glue_service + suffix.format(*args)
+            with urllib.request.urlopen(hafas_url) as hafas_call:
+                commute_widget.data = json.loads(hafas_call.read().decode())
+                routes = [self._parse_route(route) for route in commute_widget.data]
+                commute_widget.routes = [route for route in routes if route["city"] is not None]
+        except Exception as e: 
+            logger.warning("Cannot retrieve HafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
 
 
 class GoogleCommuteStrategy:
@@ -175,13 +184,19 @@ class CommuteWidget:
             display.bmp(x+23, y+104, "icons/commute_city.bmp")
         offset = 0
         for route in self.routes:
+            is_bus_preferred_station = "bus_preferred_station" not in route or route["bus_preferred_station"]
+            is_train_preferred_station = "train_preferred_station" not in route or route["train_preferred_station"]
             if route["bus"] is not None:
                 time = route["bus"]
+                text = time.strftime("%H:%M")
+                text += "" if is_bus_preferred_station else "*"
                 is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_bus.replace(tzinfo=tz.tzlocal())
-                display.text(x+46+offset, y+7, time.strftime("%H:%M"), is_red)
+                display.text(x+46+offset, y+7, text, is_red)
             time = route["train"]
+            text = time.strftime("%H:%M")
+            text += "" if is_train_preferred_station else "*"
             is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_train.replace(tzinfo=tz.tzlocal()) and route["bus"] is None
-            display.text(x+46+11+offset, y+7+52, time.strftime("%H:%M"), is_red)
+            display.text(x+46+11+offset, y+7+52, text, is_red)
             time = route["city"]
             display.text(x+46+23+offset, y+7+104, time.strftime("%H:%M"))
             offset += 77

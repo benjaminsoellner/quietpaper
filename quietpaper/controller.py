@@ -51,7 +51,7 @@ class Controller:
     def register_screen(self, screen):
         self.screens.append(screen)
 
-    def cycle(self, cycle):
+    def spin(self, cycle):
         for widget in self.widgets:
             retrieve_rate = widget.get_retrieve_rate(cycle)
             render_rate = widget.get_render_rate(cycle)
@@ -72,7 +72,7 @@ class Controller:
         try:
             while True:
                 logger.info("Cycle %d..." % cycle.number)
-                self.cycle(cycle)
+                self.spin(cycle)
                 duration = cycle.duration().seconds
                 logger.info("Took %d seconds" % duration)
                 if duration < 60:
