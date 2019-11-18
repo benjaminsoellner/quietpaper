@@ -3,7 +3,11 @@ import math
 import json
 from quietpaper.iot.tado import TadoConnection
 from quietpaper.iot.epd7in5b import EPD_HEIGHT, EPD_WIDTH
-from quietpaper.widgets.office import OfficeWidget
+from quietpaper.widgets.office import (
+    OfficeWidget,
+    GsheetsOfficeStrategy,
+    GcalOfficeStrategy
+)
 from quietpaper.widgets.commute import (
     CommuteWidget,
     HafasCommuteStrategy
@@ -30,21 +34,23 @@ def secret(key, default=""):
     return os.environ.get(key, secrets.get(key, default))
 
 # Office widget
-office_auth_file = secret("QP_OFFICE_AUTH_FILE")
-office_sheet_name = "goodmorning"
-office_data_range_benj = "B1"
-office_data_range_sara = "B2"
-office_bmp_name_benj = "benjamin"
-office_bmp_name_sara = "sara"
-office_x_sara = 313
-office_y_sara = 124
-office_x_benj = 465
-office_y_benj = 124
-office_benj = OfficeWidget(office_auth_file, office_sheet_name, office_data_range_benj, office_bmp_name_benj, office_x_benj, office_y_benj)
-office_sara = OfficeWidget(office_auth_file, office_sheet_name, office_data_range_sara, office_bmp_name_sara, office_x_sara, office_y_sara)
+
+office_auth_file_guy = office_auth_file_gal = secret("QP_OFFICE_AUTH_FILE")
+office_sheet_name_guy = "goodmorning"
+office_data_cell_guy = "B1"
+office_gsheets_guy = GsheetsOfficeStrategy(office_auth_file_guy, office_sheet_name_guy, office_data_cell_guy)
+office_calendar_id_gal = secret("QP_OFFICE_CALENDAR_ID_GAL")
+office_gcal_gal = GcalOfficeStrategy(office_auth_file_gal, office_calendar_id_gal)
+office_bmp_name_guy = "guy"
+office_bmp_name_gal = "gal"
+office_x_gal = 313
+office_y_gal = 124
+office_x_guy = 465
+office_y_guy = 124
+office_guy = OfficeWidget(office_gsheets_guy, office_bmp_name_guy, office_x_guy, office_y_guy)
+office_gal = OfficeWidget(office_gcal_gal, office_bmp_name_gal, office_x_gal, office_y_gal)
 
 # Commute widget
-
 commute_leave_for_bus = 5
 commute_leave_for_train = 30
 commute_x = 314
@@ -57,7 +63,10 @@ commute_to_address = secret("QP_COMMUTE_TO_ADDRESS")
 commute_to_latitude = secret("QP_COMMUTE_TO_LATITUDE")
 commute_to_longitude = secret("QP_COMMUTE_TO_LONGITUDE")
 commute_via_station = secret("QP_COMMUTE_VIA_STATION")
-commute_hafas = HafasCommuteStrategy(commute_hafas_glue, commute_from_address, commute_from_latitude, commute_from_longitude, commute_to_address, commute_to_latitude, commute_to_longitude, commute_via_station)
+commute_bus_preferred_station = secret("QP_COMMUTE_BUS_PREFERRED_STATION")
+commute_train_preferred_station = secret("QP_COMMUTE_TRAIN_PREFERRED_STATION")
+commute_hafas = HafasCommuteStrategy(commute_hafas_glue, commute_from_address, commute_from_latitude, commute_from_longitude,
+         commute_to_address, commute_to_latitude, commute_to_longitude, commute_via_station, commute_bus_preferred_station, commute_train_preferred_station)
 commute = CommuteWidget(commute_hafas, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
@@ -129,6 +138,8 @@ seperator = Seperator(seperator_x1, seperator_y1, seperator_x2, seperator_y2)
 # MockScreen
 mock_png = "output/output.png"
 mock = MockScreen(mock_png)
+mock_continuous_png = "output/output_%s.png"
+mock_continuous = MockScreen(mock_continuous_png, add_date=True)
 
 # EpaperScreen
 epaper = EpaperScreen()
@@ -146,8 +157,8 @@ display = Display(display_width, display_height)
 
 # Controller
 controller = Controller(display)
-controller.register_widget(office_sara)
-controller.register_widget(office_benj)
+controller.register_widget(office_gal)
+controller.register_widget(office_guy)
 controller.register_widget(commute)
 for room in rooms:
     controller.register_widget(room)
@@ -160,5 +171,6 @@ controller.register_widget(allergy)
 controller.register_widget(seperator)
 controller.register_widget(calendar)
 controller.register_screen(mock)
+controller.register_screen(mock_continuous)
 controller.register_screen(gdrive)
 controller.register_screen(epaper)

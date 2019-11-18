@@ -32,7 +32,7 @@ class CalendarWidget:
             self.events = []
             for item in self.data.get('items', []):
                 start = item['start'].get('dateTime', item['start'].get('date'))
-                self.events.append((dateutil.parser.parse(start), item['summary']))
+                self.events.append((dateutil.parser.parse(start), item['summary'], 'dateTime' in item['start']))
         except Exception as e:
             logger.warning("Cannot retrieve CalWidget: " +  (e.message if hasattr(e, 'message') else type(e).__name__))
         
@@ -49,12 +49,13 @@ class CalendarWidget:
         if len(self.events) > 0:
             now = datetime.datetime.now()
             display.bmp(x, y, "icons/calendar.gif")
-            start, text = self.events[0]
-            shortened = text[:18]+"..." if len(text)>20 else text
-            time = start.strftime("%H:%M")
+            start, text, has_time = self.events[0]
+            max_chars = 20 if has_time else 25
+            shortened = text[:(max_chars-2)]+"..." if len(text)>max_chars else text
+            time = start.strftime("%H:%M")+" " if has_time else ""
             day = start.day
             is_today = (start.day == now.day and start.month == now.month and start.year == now.year)
             display.text(x+4+(0 if day < 10 else 3), y+10, str(day), is_red=is_today, font=QP_CALENDAR_FONT)
-            display.text(x+46, y+7, time+" "+shortened)
+            display.text(x+46, y+7, time+shortened)
 
 
