@@ -51,7 +51,7 @@ office_guy = OfficeWidget(office_gsheets_guy, office_bmp_name_guy, office_x_guy,
 office_gal = OfficeWidget(office_gcal_gal, office_bmp_name_gal, office_x_gal, office_y_gal)
 
 # Commute widget
-commute_leave_for_bus = 5
+commute_leave_for_bus = 10
 commute_leave_for_train = 30
 commute_x = 314
 commute_y = 228
