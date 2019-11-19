@@ -1,5 +1,5 @@
 venv*/**
-output.bmp
+output/**/*
 secret
 secret/**
 log/qp.log

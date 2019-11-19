@@ -48,14 +48,18 @@ class CalendarWidget:
         display.erase(x, y, x+326, y+32)
         if len(self.events) > 0:
             now = datetime.datetime.now()
-            display.bmp(x, y, "icons/calendar.gif")
             start, text, has_time = self.events[0]
             max_chars = 20 if has_time else 25
             shortened = text[:(max_chars-2)]+"..." if len(text)>max_chars else text
             time = start.strftime("%H:%M")+" " if has_time else ""
             day = start.day
             is_today = (start.day == now.day and start.month == now.month and start.year == now.year)
-            display.text(x+4+(0 if day < 10 else 3), y+10, str(day), is_red=is_today, font=QP_CALENDAR_FONT)
+            if is_today:
+                display.bmp(x, y, "icons/calendar_badge_black.gif")
+                display.bmp(x, y, "icons/calendar_badge_red.gif", is_red=True)
+            else:
+                display.bmp(x, y, "icons/calendar.gif")
+            display.text(x+4+(0 if day < 10 else 3), y+10, str(day), font=QP_CALENDAR_FONT)
             display.text(x+46, y+7, time+shortened)
 
 
