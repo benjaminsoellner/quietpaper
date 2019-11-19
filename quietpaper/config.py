@@ -63,10 +63,10 @@ commute_to_address = secret("QP_COMMUTE_TO_ADDRESS")
 commute_to_latitude = secret("QP_COMMUTE_TO_LATITUDE")
 commute_to_longitude = secret("QP_COMMUTE_TO_LONGITUDE")
 commute_via_station = secret("QP_COMMUTE_VIA_STATION")
-commute_bus_preferred_station = secret("QP_COMMUTE_BUS_PREFERRED_STATION")
-commute_train_preferred_station = secret("QP_COMMUTE_TRAIN_PREFERRED_STATION")
+commute_bus_stations = secret("QP_COMMUTE_BUS_STATIONS")
+commute_train_stations = secret("QP_COMMUTE_TRAIN_STATIONS")
 commute_hafas = HafasCommuteStrategy(commute_hafas_glue, commute_from_address, commute_from_latitude, commute_from_longitude,
-         commute_to_address, commute_to_latitude, commute_to_longitude, commute_via_station, commute_bus_preferred_station, commute_train_preferred_station)
+         commute_to_address, commute_to_latitude, commute_to_longitude, commute_via_station, commute_bus_stations, commute_train_stations)
 commute = CommuteWidget(commute_hafas, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
