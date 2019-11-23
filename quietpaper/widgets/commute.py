@@ -49,7 +49,7 @@ class HafasCommuteStrategy:
 
     def retrieve(self, commute_widget):
         try:
-            start = datetime.datetime.now() - datetime.timedelta(minutes=commute_widget.leave_for_bus)
+            start = datetime.datetime.now()
             vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(start.timestamp())), str(commute_widget.num_routes), self.via_station]
             args = [urllib.parse.quote(val.encode('utf-8')) for val in vals]
             suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}&via_station={}"
@@ -186,13 +186,13 @@ class CommuteWidget:
             train_station = "" if "train_station" not in route or route["train_station"] is None else route["train_station"]
             if route["bus"] is not None:
                 time = route["bus"]
-                text = time.strftime("%H:%M") + " " + bus_station
+                text = time.strftime("%H:%M") + bus_station
                 is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_bus.replace(tzinfo=tz.tzlocal())
                 display.text(x+46+offset, y+7, text, is_red)
             time = route["train"]
-            text = time.strftime("%H:%M") + " " + train_station
+            text = time.strftime("%H:%M") + train_station
             is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_train.replace(tzinfo=tz.tzlocal()) and route["bus"] is None
             display.text(x+46+11+offset, y+7+52, text, is_red)
             time = route["city"]
             display.text(x+46+23+offset, y+7+104, time.strftime("%H:%M"))
-            offset += 80
+            offset += 76

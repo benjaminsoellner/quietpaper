@@ -98,7 +98,7 @@ clock = ClockWidget(clock_x, clock_y)
 
 # Trashday widget
 trashday_file = "data/trashday.json"
-trashday_x = 510
+trashday_x = 500
 trashday_y = 22
 trashday = TrashdayWidget(trashday_file, trashday_x, trashday_y)
 
