@@ -59,7 +59,7 @@ class CalendarWidget:
                 display.bmp(x, y, "icons/calendar_badge_red.gif", is_red=True)
             else:
                 display.bmp(x, y, "icons/calendar.gif")
-            display.text(x+4+(0 if day < 10 else 3), y+10, str(day), font=QP_CALENDAR_FONT)
+            display.text(x+4+(6 if day < 10 else 3), y+10, str(day), font=QP_CALENDAR_FONT)
             display.text(x+46, y+7, time+shortened)
 
 
