@@ -39,9 +39,11 @@ class HafasCommuteStrategy:
             if is_bus and result["bus"] is None:
                 result["bus"] = departure
                 result["bus_station"] = self.bus_stations.get(leg["origin"]["name"], "*")
+                result["bus_delay"] = int(leg["departureDelay"])/60 if "departureDelay" in leg else 0
             elif is_train and result["train"] is None:
                 result["train"] = departure
                 result["train_station"] = self.train_stations.get(leg["origin"]["name"], "*")
+                result["train_delay"] = int(leg["departureDelay"])/60 if "departureDelay" in leg else 0
             arrival = dateutil.parser.parse(leg["arrival"])
         if result["train"] is not None:
             result["city"] = arrival
@@ -184,15 +186,17 @@ class CommuteWidget:
         for route in self.routes:
             bus_station = "" if "bus_station" not in route or route["bus_station"] is None else route["bus_station"]
             train_station = "" if "train_station" not in route or route["train_station"] is None else route["train_station"]
+            bus_delay = "" if "bus_delay" not in route or route["bus_delay"] == 0 else ("+%d" % route["bus_delay"])
+            train_delay = "" if "train_delay" not in route or route["train_delay"] == 0 else ("+%d" % route["train_delay"])
             if route["bus"] is not None:
                 time = route["bus"]
-                text = time.strftime("%H:%M") + bus_station
+                text = time.strftime("%H:%M") + bus_delay + bus_station
                 is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_bus.replace(tzinfo=tz.tzlocal())
                 display.text(x+46+offset, y+7, text, is_red)
             time = route["train"]
-            text = time.strftime("%H:%M") + train_station
+            text = time.strftime("%H:%M") + train_delay + train_station
             is_red = time.replace(tzinfo=tz.tzlocal()) < deadline_train.replace(tzinfo=tz.tzlocal()) and route["bus"] is None
             display.text(x+46+11+offset, y+7+52, text, is_red)
             time = route["city"]
             display.text(x+46+23+offset, y+7+104, time.strftime("%H:%M"))
-            offset += 76
+            offset += 85

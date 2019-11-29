@@ -30,5 +30,5 @@ class ClockWidget:
         text = "%s %02d %s %04d" % (QP_CLOCK_WEEKDAYS[now.weekday()], now.day, QP_CLOCK_MONTHS[now.month-1], now.year)
         if not cycle.is_slow:
             text += " " + now.strftime("%H:%M")
-        display.erase(x, y, x+196, y+32)
+        display.erase(x, y, x+186, y+32)
         display.text(x, y+7, text)
