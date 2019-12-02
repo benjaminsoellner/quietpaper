@@ -138,8 +138,8 @@ seperator = Seperator(seperator_x1, seperator_y1, seperator_x2, seperator_y2)
 # MockScreen
 mock_png = "output/output.png"
 mock = MockScreen(mock_png)
-mock_continuous_png = "output/output_%s.png"
-mock_continuous = MockScreen(mock_continuous_png, add_date=True)
+#mock_continuous_png = "output/output_%s.png"
+#mock_continuous = MockScreen(mock_continuous_png, add_date=True)
 
 # EpaperScreen
 epaper = EpaperScreen()
@@ -171,6 +171,6 @@ controller.register_widget(allergy)
 controller.register_widget(seperator)
 controller.register_widget(calendar)
 controller.register_screen(mock)
-controller.register_screen(mock_continuous)
+#controller.register_screen(mock_continuous)
 controller.register_screen(gdrive)
 controller.register_screen(epaper)

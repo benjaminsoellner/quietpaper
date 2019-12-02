@@ -41,7 +41,7 @@ class GcalOfficeStrategy:
             office_widget.is_error = False
             office_widget.published = None
             for item in data.get('items', []):
-                item_datetime = dateutil.parser.parse(item['start'].get('dateTime', item['start'].get('date')))
+                item_datetime = dateutil.parser.parse(item['start'].get('dateTime', item['start'].get('date'))).replace(tzinfo=tz.tzlocal())
                 if item_datetime.date() >= day.date():
                     office_widget.ordered_times.append(item_datetime)
                     office_widget.flags[item_datetime] = False
