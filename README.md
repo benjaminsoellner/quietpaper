@@ -158,7 +158,7 @@ Developing!
 ![Good Support giving good support](docs/goodsupport.png)
 
 At the time of this writing this application is running for about a month and 
-the display is holding up very well! The only nuisance is the slow refresh rate
+the display is holding up very well! The only caveat is the slow refresh rate
 of the display (about 30 seconds) which limits the acceptable display refresh 
 rate to once every five minutes.
 
@@ -171,5 +171,7 @@ LUT tables are documented nowhere.
 
 Asking both at the very friendly support of Waveshare and at Good Display 
 they essentially discouraged me from experimenting with the LUT table even hinting 
-at that it might not be possible. If anyone reverse engineers the LUT and finds a 
-quicker setting that does not fry the display, let me know at `post at benkku dot com`!
+at that it might not be possible. As you can see they have a 
+[successor in their portfolio](https://www.aliexpress.com/item/4000091942229.html) though. 
+If anyone has experience with it or reverse engineers the LUT and finds a quicker setting
+that does not fry the display, let me know at `post at benkku dot com`!
