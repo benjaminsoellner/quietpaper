@@ -43,6 +43,9 @@ ended up incorporating into this project:
   in effect: by scraping the city's minimalistic mobile-phone widget HTML page.
 * [Tado API Guide - updated for 2019](https://shkspr.mobi/blog/2019/02/tado-api-guide-updated-for-2019/) - 
   huge help in understanding how to query the undocumented API of my tado thermostats.
+* [Tutorial on Programming a Waveshare 7.5-Inch Multi-Color e-Paper Display & Info-Frame](https://www.youtube.com/watch?v=mr6Lt0gKjsI&t=200s) - 
+  very great tutorial to get started with the Waveshare. I took the Weather-Display logic
+  directly from that tutorial.
 
 ## Install / Run
 
@@ -149,3 +152,24 @@ pointers about the repo's directory structure:
 For development on Raspberry Pi, I recommend Visual Studio Code with Remote 
 Development Extension as well as NoMachine to login to the Raspberry. Happy 
 Developing!
+
+## Speeding Up the Refresh Rate
+
+![Good Support giving good support](docs/goodsupport.png)
+
+At the time of this writing this application is running for about a month and 
+the display is holding up very well! The only nuisance is the slow refresh rate
+of the display (about 30 seconds) which limits the acceptable display refresh 
+rate to once every five minutes.
+
+Applied Science on Youtube has produced an excellent video 
+["E-paper hacking: fastest possible refresh rate"](https://www.youtube.com/watch?v=MsbiO8EAsGw)
+but unfortunately the technologies used seem not available for the 7.5 inch display.
+The code in the respective places is left out, there are some vague hints at 
+respective byte sequences in the spec sheet but corresponding reference VCOM 
+LUT tables are documented nowhere.
+
+Asking both at Waveshare and at Good Display they discouraged me from 
+experimenting with the LUT table even hinting at that it might not be possible.
+If anyone reverse engineers the LUT and finds a quicker setting that does not
+fry the display, let me know at `post at benkku dot com`!
