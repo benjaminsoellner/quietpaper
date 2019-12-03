@@ -46,7 +46,7 @@ ended up incorporating into this project:
 
 ## Install / Run
 
-![The display cabeling](docs/guts.jpg)
+![The picture frame back with all the cabeling](docs/back.jpg)
 
 1. You need the following prequisites:
 * Raspbian Stretch Image
@@ -82,34 +82,41 @@ sudo service {start|stop|restart} {quietpaper|hafasglue}
 
 ## Widgets
 
-![The picture frame back with all the cabeling](docs/back.jpg)
+![The display cabeling](docs/guts.jpg)
 
 The core of this project are its "widgets", the different information snippets
 displayed. The following widgets are developed (and stored in the subfolder
 `quietpaper/widgets`):
 
 * `allergy.py`: air quality as reported by Philipps Air Purifier and
-  (potentially sometime) also the air quality reported outdoors on "some" public 
-  website
+  (potentially some time in the future) also the air quality reported outdoors 
+  on "some" public website
 * `cal.py`: the next appointment on some Google calendar
-* `clock.py`: time and date
+* `clock.py`: time and date (during night/workday, the display supports a 
+  longer update cycle when the time is hidden)
 * `commute.py`: upcoming routes from your home into the city assuming a 
-  "bus -> train -> city" route (as it is the case in my current home)
+  "bus -> train -> city" route (as it is the case in my current home); can also 
+  show additional information such as bus/train leaving from another station (small
+  character suffix) or delays in the bus/train timetable (small "+..." suffix)
 * `monitor.py`: small symbols indicating if some of your electronic devices
   are running (Network Attached Storage, VPN, internet connection)
-* `office.py`: showing (for work-life-balance-purposes ONLY) the time of your
-  first appointment at work in the morning (and hiding the title etc. in order
+* `office.py`: showing ONLY the time of your first appointment at work in the
+  morning (for work-life-balance-purposes hiding the title etc. in order
   not to break you out of your home-sweet-home feel); uses either 
   a Google Docs Sheet (which you can fill by other means) or a Google
-  Calendar as source for this information
+  Calendar as source for this information; also can add an asterisk if 
+  the appointment is marked as "special"
 * `room.py`: room climate information from tado thermostats including 
   temperature, warm-up/cool-down indicator, window-open indicator and 
-  humidity as well as humidity "alarm"
+  humidity as well as humidity "alarm"; window-open indicator supports three states:
+  window closed (black square), window open (red open window icon) or 
+  "window was already opened to let fresh air in today" (no icon)
 * `separator.py`: a straight horizontal line
 * `smog.py`: indicates whether the city of Stuttgart currently has a smog alert
   or not
 * `trashday.py`: displays whether it is a day where we should put out the
-  garbage to be picked up
+  garbage to be picked up (for different kinds of garbage: bio, paper, 
+  recycle, waste)
 * `wheather.py`: weather information from https://api.openweathermap.org
 
 ## Develop
