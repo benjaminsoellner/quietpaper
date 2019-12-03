@@ -1,6 +1,6 @@
 # Quietpaper - Smart Home Display Project
 
-![The display front view](doc/front.jpg)
+![The display front view](docs/front.jpg)
 
 This is a passion project that realizes an Raspberry-Pi-based smart home display 
 using the [3-color Waveshare e-Paper Display 7.5 inch](https://www.waveshare.com/w/upload/b/b6/7.5inch-e-paper-specification.pdf).
@@ -46,7 +46,7 @@ ended up incorporating into this project:
 
 ## Install / Run
 
-![The display cabeling](doc/guts.jpg)
+![The display cabeling](docs/guts.jpg)
 
 1. You need the following prequisites:
 * Raspbian Stretch Image
@@ -82,7 +82,7 @@ sudo service {start|stop|restart} {quietpaper|hafasglue}
 
 ## Widgets
 
-![The picture frame back with all the cabeling](doc/back.jpg)
+![The picture frame back with all the cabeling](docs/back.jpg)
 
 The core of this project are its "widgets", the different information snippets
 displayed. The following widgets are developed (and stored in the subfolder
@@ -114,7 +114,7 @@ displayed. The following widgets are developed (and stored in the subfolder
 
 ## Develop
 
-![The remote development UI](doc/backstage.jpg)
+![The remote development UI](docs/backstage.jpg)
 
 If you want to modify this project and/or adapt it to your need, here are some
 pointers about the repo's directory structure:
