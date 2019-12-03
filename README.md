@@ -169,7 +169,7 @@ The code in the respective places is left out, there are some vague hints at
 respective byte sequences in the spec sheet but corresponding reference VCOM 
 LUT tables are documented nowhere.
 
-Asking both at Waveshare and at Good Display they discouraged me from 
-experimenting with the LUT table even hinting at that it might not be possible.
-If anyone reverse engineers the LUT and finds a quicker setting that does not
-fry the display, let me know at `post at benkku dot com`!
+Asking both at the very friendly support of Waveshare and at Good Display 
+they essentially discouraged me from experimenting with the LUT table even hinting 
+at that it might not be possible. If anyone reverse engineers the LUT and finds a 
+quicker setting that does not fry the display, let me know at `post at benkku dot com`!
