@@ -103,8 +103,8 @@ trashday_y = 22
 trashday = TrashdayWidget(trashday_file, trashday_x, trashday_y)
 
 # Monitor widget
-monitor_nas_host = "192.168.178.33"
-monitor_vpn_host = "house.benkku.com"
+monitor_nas_host = secret("QP_MONITOR_NAS_HOST")
+monitor_vpn_host = secret("QP_MONITOR_VPN_HOST")
 monitor_x = 584
 monitor_y = 22
 monitor = MonitorWidget(monitor_nas_host, monitor_vpn_host, monitor_x, monitor_y)
