@@ -91,36 +91,19 @@ The core of this project are its "widgets", the different information snippets
 displayed. The following widgets are developed (and stored in the subfolder
 `quietpaper/widgets`):
 
-* `allergy.py`: air quality as reported by Philipps Air Purifier and
-  (potentially some time in the future) also the air quality reported outdoors 
-  on "some" public website
-* `cal.py`: the next appointment on some Google calendar
-* `clock.py`: time and date (during night/workday, the display supports a 
-  longer update cycle when the time is hidden)
-* `commute.py`: upcoming routes from your home into the city assuming a 
-  "bus -> train -> city" route (as it is the case in my current home); can also 
-  show additional information such as bus/train leaving from another station (small
-  character suffix) or delays in the bus/train timetable (small "+..." suffix)
-* `monitor.py`: small symbols indicating if some of your electronic devices
-  are running (Network Attached Storage, VPN, internet connection)
-* `office.py`: showing ONLY the time of your first appointment at work in the
-  morning (for work-life-balance-purposes hiding the title etc. in order
-  not to break you out of your home-sweet-home feel); uses either 
-  a Google Docs Sheet (which you can fill by other means) or a Google
-  Calendar as source for this information; also can add an asterisk if 
-  the appointment is marked as "special"
-* `room.py`: room climate information from tado thermostats including 
-  temperature, warm-up/cool-down indicator, window-open indicator and 
-  humidity as well as humidity "alarm"; window-open indicator supports three states:
-  window closed (black square), window open (red open window icon) or 
-  "window was already opened to let fresh air in today" (no icon)
-* `separator.py`: a straight horizontal line
-* `smog.py`: indicates whether the city of Stuttgart currently has a smog alert
-  or not
-* `trashday.py`: displays whether it is a day where we should put out the
-  garbage to be picked up (for different kinds of garbage: bio, paper, 
-  recycle, waste)
-* `wheather.py`: weather information from https://api.openweathermap.org
+| Python file     | Icons | Description |
+|-----------------|-------|-------------|
+| `allergy.py`    | ![Allergy icon](icons/allergy_inside.gif) | air quality as  reported by Philipps Air Purifier and (potentially some time in the future) also the air quality reported outdoors on "some" public website |
+| `cal.py`        | ![Calendar icon](icons/calendar.gif)      | the next appointment on some Google calendar 
+| `clock.py`      | -     | time and date (during night/workday, the time is hidden because the display uses a longer update cycle) |
+| `commute.py`    | ![Bus icon](icons/commute_bus.gif), ![Train icon](icons/commute_train.gif), ![City icon](icons/commute_city.gif)) | upcoming routes from your home into the city assuming a "bus -> train -> city" route (as it is the case in my current home); can also show additional information such as bus/train leaving from another station (small character suffix) or delays in the bus/train timetable (small `+...` suffix) |
+| `monitor.py`    | ![NAS icon](icons/monitor_nas.gif), ![VPN icon](icons/monitor_vpn.gif), ![Internet icon](icons/monitor_inet.gif) | small symbols indicating if some of your electronic devices are running or down (Network Attached Storage, VPN, internet connection) |
+| `office.py`     | ![Office guy icon](icons/office_guy.gif), ![Office gal icon](icons/office_gal.gif) | showing ONLY the time of your first appointment at work in the morning (for work-life-balance-purposes hiding the title etc. in order not to break you out of your home-sweet-home feel); uses either a Google Docs Sheet (which you can fill by other means) or a Google Calendar as source for this information; also can add an asterisk if the appointment is marked as "special" |
+| ``room.py`      | ![Bedroom icon](icons/room_bed.gif), ![Closet room icon](icons/room_closet.gif), ![Living room icon](icons/room_living.gif), ![Office icon](icons/room_office.gif), ![Bathroom icon](icons/room_bath.gif), ![Twin-Bathroom icon](icons/room_twinbath.gif) | room climate information from tado thermostats including temperature, warm-up/cool-down indicator (![Up arrow](icons/arrow_up.gif), ![Down arrow](icons/arrow_down.gif), window-open indicator and humidity as well as humidity "alarm"; window-open indicator supports three states: window closed (![Window open icon](icons/window_closed.gif)), window open (![Window open icon](icons/window_open.gif)), "window was already opened to let fresh air in today" (no icon) |
+| `separator.py`  | -     |  a straight horizontal line
+| `smog.py`       | ![Smog icon](icons/allergy_smog.gif) | indicates whether the city of Stuttgart currently has a smog alert or not |
+| `trashday.py`   | ![Recycle trash icon](icons/date_trash_recycle.gif), ![Waste trash icon](icons/date_trash_waste.gif), ![Paper trash icon](icons/date_trash_paper.gif), ![Bio trash icon](icons/date_trash_bio.gif) | displays whether it is a day where we should put out the garbage to be picked up (for different kinds of garbage: bio ![Bio trash icon](icons/date_trash_bio.gif), paper ![Paper trash icon](icons/date_trash_paper.gif), recycle ![Recycle trash icon](icons/date_trash_recycle.gif), waste ![Waste trash icon](icons/date_trash_waste.gif)) |
+| `wheather.py`   | icons based on font `font/meteocons-webfont.ttf` | weather information from https://api.openweathermap.org |
 
 ## Develop
 
