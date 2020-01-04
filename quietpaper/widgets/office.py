@@ -31,9 +31,10 @@ class GcalOfficeStrategy:
         scope = ['https://www.googleapis.com/auth/calendar.readonly']
         credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
+        next_week = (datetime.datetime.utcnow() + datetime.timedelta(hours=24*7)).isoformat()
         try:
             service = build('calendar', 'v3', credentials=credentials)
-            data = service.events().list(calendarId=self.calender_id, timeMin=now,
+            data = service.events().list(calendarId=self.calender_id, timeMin=now, timeMax=next_week,
                                                     maxResults=20, singleEvents=True, orderBy='startTime').execute()
             day = datetime.datetime.now()
             office_widget.ordered_times = []
