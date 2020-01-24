@@ -2,7 +2,7 @@ import os
 import math
 import json
 from quietpaper.iot.tado import TadoConnection
-from quietpaper.iot.epd7in5b import EPD_HEIGHT, EPD_WIDTH
+from quietpaper.iot.epd7in5bv2 import EPD_HEIGHT, EPD_WIDTH
 from quietpaper.widgets.office import (
     OfficeWidget,
     GsheetsOfficeStrategy,
@@ -142,7 +142,7 @@ mock = MockScreen(mock_png)
 #mock_continuous = MockScreen(mock_continuous_png, add_date=True)
 
 # EpaperScreen
-epaper = EpaperScreen()
+epaper = EpaperScreen(version=2)
 
 # GdriveScreen
 gdrive_auth_file = secret("QP_GDRIVE_AUTH_FILE")
@@ -151,8 +151,8 @@ gdrive_file_locally = mock_png
 gdrive = GdriveScreen(gdrive_auth_file, gdrive_file_id, gdrive_file_locally)
 
 # Display 
-display_height = EPD_HEIGHT
-display_width = EPD_WIDTH
+display_width = 640
+display_height = 384
 display = Display(display_width, display_height)
 
 # Controller
