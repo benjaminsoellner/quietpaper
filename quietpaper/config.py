@@ -2,7 +2,7 @@ import os
 import math
 import json
 from quietpaper.iot.tado import TadoConnection
-from quietpaper.iot.epd7in5bv2 import EPD_HEIGHT, EPD_WIDTH
+from quietpaper.iot.meross import MerossConnection
 from quietpaper.widgets.office import (
     OfficeWidget,
     GsheetsOfficeStrategy,
@@ -20,6 +20,10 @@ from quietpaper.widgets.monitor import MonitorWidget
 from quietpaper.widgets.weather import WeatherWidget
 from quietpaper.widgets.allergy import AllergyWidget
 from quietpaper.widgets.cal import CalendarWidget
+from quietpaper.widgets.laundry import (
+    LaundryMachine,
+    LaundryWidget
+)
 from quietpaper.widgets.seperator import Seperator
 from quietpaper.screens.mock import MockScreen
 from quietpaper.screens.epaper import EpaperScreen
@@ -98,7 +102,7 @@ clock = ClockWidget(clock_x, clock_y)
 
 # Trashday widget
 trashday_file = "data/trashday.json"
-trashday_x = 500
+trashday_x = 215
 trashday_y = 22
 trashday = TrashdayWidget(trashday_file, trashday_x, trashday_y)
 
@@ -135,6 +139,22 @@ seperator_x2 = 12+616
 seperator_y1 = seperator_y2 = 62
 seperator = Seperator(seperator_x1, seperator_y1, seperator_x2, seperator_y2)
 
+# Laundry
+meross_connection = MerossConnection(secret("QP_MEROSS_EMAIL"), secret("QP_MEROSS_PASSWORD"))
+washing_machine = LaundryMachine(
+    secret("QP_LAUNDRY_WASHING_MACHINE"),
+    meross_connection,
+    secret("QP_LAUNDRY_WASHING_STBY_POWER"),
+    secret("QP_LAUNDRY_WASHING_ACTIVE_POWER"))
+drying_machine = LaundryMachine(
+    secret("QP_LAUNDRY_DRYING_MACHINE"),
+    meross_connection,
+    secret("QP_LAUNDRY_DRYING_STBY_POWER"),
+    secret("QP_LAUNDRY_DRYING_ACTIVE_POWER"))
+laundry_x = 520
+laundry_y = 22
+laundry = LaundryWidget(laundry_x, laundry_y, washing_machine, drying_machine)
+
 # MockScreen
 mock_png = "output/output.png"
 mock = MockScreen(mock_png)
@@ -170,6 +190,7 @@ controller.register_widget(weather)
 controller.register_widget(allergy)
 controller.register_widget(seperator)
 controller.register_widget(calendar)
+controller.register_widget(laundry)
 controller.register_screen(mock)
 #controller.register_screen(mock_continuous)
 controller.register_screen(gdrive)
