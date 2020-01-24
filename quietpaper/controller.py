@@ -75,7 +75,7 @@ class Controller:
                 self.spin(cycle)
                 duration = cycle.duration().seconds
                 logger.info("Took %d seconds" % duration)
-                if duration < 60:
+                if duration <= 60:
                     time.sleep(60-duration)
                 cycle = cycle.next()
         except:
