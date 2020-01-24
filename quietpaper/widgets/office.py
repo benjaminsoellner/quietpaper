@@ -31,10 +31,10 @@ class GcalOfficeStrategy:
         scope = ['https://www.googleapis.com/auth/calendar.readonly']
         credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
-        next_week = (datetime.datetime.utcnow() + datetime.timedelta(hours=24*7)).isoformat()
+        next_week = (datetime.datetime.utcnow() + datetime.timedelta(hours=24*7)).replace(tzinfo=tz.tzlocal())
         try:
             service = build('calendar', 'v3', credentials=credentials)
-            data = service.events().list(calendarId=self.calender_id, timeMin=now, timeMax=next_week,
+            data = service.events().list(calendarId=self.calender_id, timeMin=now,
                                                     maxResults=20, singleEvents=True, orderBy='startTime').execute()
             day = datetime.datetime.now()
             office_widget.ordered_times = []
@@ -43,7 +43,7 @@ class GcalOfficeStrategy:
             office_widget.published = None
             for item in data.get('items', []):
                 item_datetime = dateutil.parser.parse(item['start'].get('dateTime', item['start'].get('date'))).replace(tzinfo=tz.tzlocal())
-                if item_datetime.date() >= day.date():
+                if item_datetime.date() >= day.date() and item_datetime <= next_week:
                     office_widget.ordered_times.append(item_datetime)
                     office_widget.flags[item_datetime] = False
                     day = item_datetime + datetime.timedelta(hours=24)
@@ -80,7 +80,7 @@ class GsheetsOfficeStrategy:
                 self.data = json.loads(value)
             if self.data is None or "Error" in self.data:
                 office_widget.is_error = (self.data is not None and "Error" in self.data)
-                self.published = None
+                office_widget.published = None
                 office_widget.ordered_times = None
                 office_widget.flags = None
             else:
