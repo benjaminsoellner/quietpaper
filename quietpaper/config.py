@@ -102,7 +102,7 @@ clock = ClockWidget(clock_x, clock_y)
 
 # Trashday widget
 trashday_file = "data/trashday.json"
-trashday_x = 215
+trashday_x = 500
 trashday_y = 22
 trashday = TrashdayWidget(trashday_file, trashday_x, trashday_y)
 
@@ -151,7 +151,7 @@ drying_machine = LaundryMachine(
     meross_connection,
     secret("QP_LAUNDRY_DRYING_STBY_POWER"),
     secret("QP_LAUNDRY_DRYING_ACTIVE_POWER"))
-laundry_x = 520
+laundry_x = 189
 laundry_y = 22
 laundry = LaundryWidget(laundry_x, laundry_y, washing_machine, drying_machine)
 
