@@ -115,7 +115,7 @@ monitor = MonitorWidget(monitor_nas_host, monitor_vpn_host, monitor_x, monitor_y
 
 # Weather widget
 weather_api_key_file = secret("QP_WEATHER_API_KEY_FILE")
-weather_zip_location = "70565,de"
+weather_zip_location = secret("QP_WEATHER_ZIP_LOCATION")
 weather_x = 23
 weather_y = 23
 weather = WeatherWidget(weather_api_key_file, weather_zip_location, weather_x, weather_y)
