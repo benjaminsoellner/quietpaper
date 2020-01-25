@@ -17,7 +17,7 @@ QP_COMMUTE_SMALL_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-mi
 class HafasCommuteStrategy:
 
     def __init__(self, hafas_glue_url, from_address, from_latitude, from_longitude, to_address, to_latitude, to_longitude, 
-                    via_station, bus_stations={}, train_stations={}):
+                    bus_stations={}, train_stations={}):
         self.hafas_glue_service = hafas_glue_url
         self.from_latitude = from_latitude
         self.to_latitude = to_latitude
@@ -25,7 +25,6 @@ class HafasCommuteStrategy:
         self.to_address = to_address
         self.from_longitude = from_longitude
         self.to_longitude = to_longitude
-        self.via_station = via_station
         self.bus_stations = bus_stations
         self.train_stations = train_stations
 
@@ -62,9 +61,9 @@ class HafasCommuteStrategy:
     def retrieve(self, commute_widget):
         try:
             start = datetime.datetime.now()
-            vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(start.timestamp())), str(commute_widget.num_routes), self.via_station]
+            vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(start.timestamp())), str(commute_widget.num_routes)]
             args = [urllib.parse.quote(val.encode('utf-8')) for val in vals]
-            suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}&via_station={}"
+            suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}"
             hafas_url = self.hafas_glue_service + suffix.format(*args)
             with urllib.request.urlopen(hafas_url) as hafas_call:
                 commute_widget.data = json.loads(hafas_call.read().decode())

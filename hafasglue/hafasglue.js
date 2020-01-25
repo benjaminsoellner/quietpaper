@@ -39,12 +39,10 @@ app.get('/query', function(req, res) {
     opt = {
         departure: (new Date(parseInt(req.query.departure)*1000)).toISOString(),
         results: req.query.num_routes,
-        via: req.query.via_station,
         stopovers: false,
         transfers: -1,
         transferTime: 0,
         accessibility: 'none',
-        startWithWalking: true,
         language: 'en',
         scheduledDays: false
     }
