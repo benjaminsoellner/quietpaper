@@ -1,4 +1,5 @@
 import datetime
+from quietpaper import logger
 
 class LaundryMachine:
     def __init__(self, name, meross_connection, stby_power, active_power):
