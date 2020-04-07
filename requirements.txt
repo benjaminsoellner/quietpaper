@@ -24,7 +24,7 @@ google-auth-oauthlib==0.4.1
 
 # for epd* and display
 # note: compiling Pillow from source needs "sudo apt-get install libjpeg-dev zlib1g-dev"
-Pillow==6.2.0
+Pillow>=6.2.2
 RPi.GPIO==0.6.5
 spidev==3.4
 # note: Numpy needs sudo apt-get install python-dev libatlas-base-dev
