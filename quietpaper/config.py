@@ -150,7 +150,7 @@ drying_machine = LaundryMachine(
     meross_connection,
     secret("QP_LAUNDRY_DRYING_STBY_POWER"),
     secret("QP_LAUNDRY_DRYING_ACTIVE_POWER"))
-laundry_x = 189
+laundry_x = 186
 laundry_y = 22
 laundry = LaundryWidget(laundry_x, laundry_y, washing_machine, drying_machine)
 
