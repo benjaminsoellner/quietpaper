@@ -9,6 +9,9 @@ class LaundryMachine:
         self.active_power = active_power
         self.last_active = None
         self.plug = None
+    
+    def reconnect(self):
+        self.connection.connect()
 
     def refresh_plug(self):
         self.plug = self.connection.get_plug_by_name(self.name)
@@ -63,9 +66,23 @@ class LaundryWidget:
     def retrieve(self, cycle):
         try:
             self.washing_state = self.washing_machine.get_state()
-            self.drying_state = self.drying_machine.get_state()
         except Exception as e: 
-            logger.warning("Cannot retrieve LaundryWidget: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+            logger.warning("Cannot retrieve LaundryWidget.washing_state: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+            self.washing_machine.restart()
+            try:
+                self.washing_machine.reconnect()
+                self.washing_state = self.washing_machine.get_state()
+            except Exception as ee:
+                logger.warning("After resetting connection, still cannot retrieve LaundryWidget.washing_state: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
+        try:
+            self.drying_state = self.drying_machine.get_state()
+        except Exception as e:
+            logger.warning("Cannot retrieve LaundryWidget.drying_state: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+            try:
+                self.drying_machine.reconnect()
+                self.drying_state = self.drying_machine.get_state()
+            except Exception as ee:
+                logger.warning("After resetting connection, still cannot retrieve LaundryWidget.drying_state: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
 
 
     def get_retrieve_rate(self, cycle):
