@@ -68,7 +68,6 @@ class LaundryWidget:
             self.washing_state = self.washing_machine.get_state()
         except Exception as e: 
             logger.warning("Cannot retrieve LaundryWidget.washing_state: " + (e.message if hasattr(e, 'message') else type(e).__name__))
-            self.washing_machine.restart()
             try:
                 self.washing_machine.reconnect()
                 self.washing_state = self.washing_machine.get_state()
