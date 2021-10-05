@@ -25,9 +25,9 @@ class MonitorWidget:
         pass
         
     def retrieve(self, cycle):
-        self.nas_ok = (check_socket(self.nas_host, 80) == 0)
+        self.nas_ok = (check_socket(self.nas_host, 8080) == 0)
         self.vpn_ok = (os.system("ping -c 1 %s >/dev/null 2>/dev/null" % self.vpn_host) == 0)
-        self.inet_ok = (check_socket("172.217.23.163", 80) == 0)
+        self.inet_ok = (check_socket("1.1.1.1", 53) == 0) # Clodflare DNS server
         
     def get_retrieve_rate(self, cycle):
         return 1
