@@ -81,7 +81,7 @@ tado = TadoConnection(tado_client_secrets_file, tado_username, tado_password)
 # Room widget
 room_y_offset = 0
 rooms = []
-for (room_name, room_zone) in [("living", 1), ("bed", 2), ("office", 3), ("closet", 4), ("bath", 5), ("twinbath", 6)]:
+for (room_name, room_zone) in [("living", 1), ("bed", 4), ("kid", 2), ("office", 3), ("bath", 5), ("twinbath", 6)]:
     room_max_humidity = 60 if room_zone > 4 else 65
     room_x = 22
     room_y = math.ceil(72 + room_y_offset)
