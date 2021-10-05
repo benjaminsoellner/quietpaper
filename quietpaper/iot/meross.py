@@ -10,10 +10,13 @@ class MerossConnection:
         self.connect()
     
     def connect(self):
-        if self.manager is not None:
-            self.manager.stop()
+        self.disconnect()
         self.manager = MerossManager.from_email_and_password(self.meross_email, self.meross_password)
         self.manager.start()
+    
+    def disconnect(self):
+        if self.manager is not None:
+            self.manager.stop()
 
     def get_plug_by_name(self, name):
         for p in self.manager.get_devices_by_kind(GenericPlug):
