@@ -8,27 +8,21 @@ class LaundryMachine:
         self.stby_power = stby_power
         self.active_power = active_power
         self.last_active = None
-        self.plug = None
     
-    def refresh_plug(self):
-        self.plug = self.connection.get_plug_by_name(self.name)
-        if self.plug == None:
-            return True
-
     def get_power(self):
-        if self.plug is None:
-            self.refresh_plug()
-        if self.plug is not None:
-            electricity = self.plug.get_electricity()
+        self.connection.connect()
+        plug = self.connection.get_plug_by_name(self.name)
+        if plug is not None:
+            electricity = plug.get_electricity()
             if electricity and "power" in electricity and "config" in electricity:
                 return electricity["power"] / electricity["config"]["electricityRatio"]
             else:
                 return None
         else:
             return None
+        self.connection.disconnect()
 
     def get_state(self):
-        self.connection.connect()
         power = self.get_power()
         if (power is not None and power > self.stby_power):
             if power > self.active_power:
@@ -46,8 +40,7 @@ class LaundryMachine:
                 else:
                     return "stby"
         else:
-            return None    
-        self.connection.disconnect()
+            return None
 
 class LaundryWidget:
 
