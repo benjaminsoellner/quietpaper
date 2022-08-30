@@ -161,7 +161,7 @@ mock = MockScreen(mock_png)
 #mock_continuous = MockScreen(mock_continuous_png, add_date=True)
 
 # EpaperScreen
-epaper = EpaperScreen(version=2)
+epaper = EpaperScreen(version=3)
 
 # GdriveScreen
 gdrive_auth_file = secret("QP_GDRIVE_AUTH_FILE")
