@@ -11,7 +11,7 @@ app.get('/', function(req, res) {
 
 from = {
 	type: 'location',
-	address: 'Sattelaecker 1B, 70565 Stuttgart',
+	address: '70565 Stuttgart',
 	latitude: 48.721010,
 	longitude: 9.094880
 }
