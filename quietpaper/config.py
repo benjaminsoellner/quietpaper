@@ -10,7 +10,7 @@ from quietpaper.widgets.office import (
 )
 from quietpaper.widgets.commute import (
     CommuteWidget,
-    HafasCommuteStrategy
+    PyhafasCommuteStrategy
 )
 from quietpaper.widgets.room import RoomWidget
 from quietpaper.widgets.smog import SmogWidget
@@ -61,15 +61,10 @@ commute_x = 314
 commute_y = 228
 commute_hafas_glue = "http://localhost:3333/query"
 commute_from_address = secret("QP_COMMUTE_FROM_ADDRESS")
-commute_from_latitude = secret("QP_COMMUTE_FROM_LATITUDE")
-commute_from_longitude = secret("QP_COMMUTE_FROM_LONGITUDE")
 commute_to_address = secret("QP_COMMUTE_TO_ADDRESS")
-commute_to_latitude = secret("QP_COMMUTE_TO_LATITUDE")
-commute_to_longitude = secret("QP_COMMUTE_TO_LONGITUDE")
 commute_bus_stations = secret("QP_COMMUTE_BUS_STATIONS")
 commute_train_stations = secret("QP_COMMUTE_TRAIN_STATIONS")
-commute_hafas = HafasCommuteStrategy(commute_hafas_glue, commute_from_address, commute_from_latitude, commute_from_longitude,
-         commute_to_address, commute_to_latitude, commute_to_longitude, commute_bus_stations, commute_train_stations)
+commute_hafas = PyhafasCommuteStrategy(commute_from_address, commute_to_address, commute_bus_stations, commute_train_stations)
 commute = CommuteWidget(commute_hafas, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
@@ -152,7 +147,7 @@ drying_machine = LaundryMachine(
     secret("QP_LAUNDRY_DRYING_ACTIVE_POWER"))
 laundry_x = 186
 laundry_y = 22
-laundry = LaundryWidget(laundry_x, laundry_y, washing_machine, drying_machine)
+laundry = LaundryWidget(laundry_x, laundry_y, washing_machine, drying_machine, meross_connection)
 
 # MockScreen
 mock_png = "output/output.png"

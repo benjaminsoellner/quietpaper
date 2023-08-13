@@ -18,23 +18,16 @@ The application is developed as Python application that can be run as a linux
 daemon and update the system at regular times (currently multiples of 5 minute steps
 which I found best for the slow refresh cycles of the Waveshare display).
 
-The application also talks to a concurrently running NodeJs application 
-(called **hafasglue**) in order to interface with the German "Deutsche Bahn" public 
-transit API "Hafas". You can forego this concurrently running application and configure 
-the corresponding widget to retrieve data from the Google Directions API instead - which
-is unfortunately not for free but (given that API calls are not cached) rather pricey.
-
 Here are some other libraries and projects that were helpful and/or whose code I 
 ended up incorporating into this project:
 
 * [`rgerganov/py-air-control`](https://github.com/rgerganov/py-air-control/) - Command
   Line App for controlling Philipps Air Purifier - modified version stored at 
   `quietpaper/iot/airctrl.py`
-* [`public-transport/hafas-client`](https://github.com/public-transport/hafas-client/blob/4/docs/journeys.md) - 
+* [`FahrplanDatenGarten/pyhafas`](https://github.com/FahrplanDatenGarten/pyhafas) - 
   Hafas is the German "Deutsche Bahn" system that provides the electronic 
-  public transit timetables and this is a NodeJs client of of their
-  rather clunky XML Webservice. The client is supplied as a much leaner
-  REST-API by my NodeJs servlet in `hafasglue`.
+  public transit timetables and this is a Python library for their
+  rather clunky XML Webservice.
 * [`momorientes/istheutefeinstaubalarm`](https://github.com/momorientes/istheutefeinstaubalarm) - 
   my town Stuttgart, Germany provides "Smog Alerts" on which days we should 
   leave our cars at home, use public transit for lower price (in some cases
@@ -55,8 +48,9 @@ ended up incorporating into this project:
 
 1. You need the following prequisites:
 * Raspbian Stretch Image
-* Python 3 Installation
-* Node Version Manager or Node Package Manager
+* Python 3.9 Installation:
+  * [`albertogeniola/MerossIot`](https://github.com/albertogeniola/MerossIot) needs at least 3.7, but this caused Segmentation Faults on my Raspbian Stretch image whenever `asyncio` functionality was used
+  * Loosely follow these instructions and use an up-to-date Python 3.9.x patch version, e.gp. I used 3.9.17: https://gist.github.com/matthiasroos/3c8f1e0265eff6b60f6a7bcf701daa14)
 * Display connected to Raspberry
 
 2. Next, if you want to use all widgets exactly in the layout I use you can just copy
@@ -68,20 +62,25 @@ situation.
 re-arrange them. For this, see the next chapters. You might at least want to edit
 the file `quietpaper/config.py` which sets the layout of the widgets on the display.
 
-4. You can then install both the `quietpaper` daemon (Python app which updates the display) 
-and the `hafasglue` daemon (Node-JS servlet which talks to Hafas in order to retrieve
-public transit information) by calling:
+4. Installing will build a few packages from their Python Wheels Sources. For this
+process you need (once, you can uninstall those programs after the installation process):
+```bash
+sudo apt-get install libjpeg-dev zlib1g-dev # for installing pip Pillow from source
+sudo apt-get install python-dev libatlas-base-dev # for installing Numpy from source
 ```
+
+5. You can then install the `quietpaper` daemon (Python app which updates the display) 
+by calling:
+```bash
 ./install-and-autorun.bash
 ```
 
-5. The display will now load! - You can start/stop/restart the daemons by calling
-```
-sudo service {start|stop|restart} {quietpaper|hafasglue}
+6. The display will now load! - You can start/stop/restart the daemons by calling
+```bash
+sudo service {start|stop|restart} quietpaper
 ```
 ... or, after stopping the services, run them directly with:
-```
-./hafasglue.bash
+```bash
 ./quietpaper.bash
 ```
 

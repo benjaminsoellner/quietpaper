@@ -2,28 +2,16 @@ import datetime
 from quietpaper import logger
 
 class LaundryMachine:
-    def __init__(self, name, meross_connection, stby_power, active_power):
-        self.name = name
-        self.connection = meross_connection
+    def __init__(self, plug_name, meross_connection, stby_power, active_power):
+        self.plug_name = plug_name
+        self.meross_connection = meross_connection
         self.stby_power = stby_power
         self.active_power = active_power
         self.last_active = None
     
-    def get_power(self):
-        self.connection.connect()
-        plug = self.connection.get_plug_by_name(self.name)
-        if plug is not None:
-            electricity = plug.get_electricity()
-            if electricity and "power" in electricity and "config" in electricity:
-                return electricity["power"] / electricity["config"]["electricityRatio"]
-            else:
-                return None
-        else:
-            return None
-        self.connection.disconnect()
-
     def get_state(self):
-        power = self.get_power()
+        power = self.meross_connection.get_power_of_plug(self.plug_name)
+        logger.info("Power of " + self.plug_name + " is " + str(power))
         if (power is not None and power > self.stby_power):
             if power > self.active_power:
                 self.last_active = datetime.datetime.now()
@@ -44,27 +32,23 @@ class LaundryMachine:
 
 class LaundryWidget:
 
-    def __init__(self, x, y, washing_machine, drying_machine):
+    def __init__(self, x, y, washing_machine, drying_machine, meross_connection):
         self.x = x
         self.y = y
         self.washing_machine = washing_machine
         self.washing_state = None
         self.drying_machine = drying_machine
         self.drying_state = None
+        self.meross_connection = meross_connection
        
     def initialize(self):
         pass
 
     def retrieve(self, cycle):
-        try:
-            self.washing_state = self.washing_machine.get_state()
-        except Exception as ee:
-            logger.warning("Cannot retrieve LaundryWidget.washing_state: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
-        try:
-            self.drying_state = self.drying_machine.get_state()
-        except Exception as ee:
-            logger.warning("Cannot retrieve LaundryWidget.drying_state: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
-
+        self.meross_connection.connect()
+        self.washing_state = self.washing_machine.get_state()
+        self.drying_state = self.drying_machine.get_state()
+        self.meross_connection.disconnect()
 
     def get_retrieve_rate(self, cycle):
         return 2

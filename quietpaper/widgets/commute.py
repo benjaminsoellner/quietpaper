@@ -2,75 +2,71 @@ import googlemaps
 import json
 import datetime
 import dateutil.parser
-import pprint
 import itertools
 from quietpaper import logger
-import urllib.request, urllib.parse
-import json 
 from dateutil import tz
 from PIL import ImageFont
-
+from pyhafas.profile import DBProfile
+from pyhafas import HafasClient
+from pyhafas.types.fptf import Mode
 
 QP_COMMUTE_NUM_ROUTES = 3
 QP_COMMUTE_SMALL_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
 
-class HafasCommuteStrategy:
+class PyhafasCommuteStrategy:
 
-    def __init__(self, hafas_glue_url, from_address, from_latitude, from_longitude, to_address, to_latitude, to_longitude, 
-                    bus_stations={}, train_stations={}):
-        self.hafas_glue_service = hafas_glue_url
-        self.from_latitude = from_latitude
-        self.to_latitude = to_latitude
-        self.from_address = from_address
-        self.to_address = to_address
-        self.from_longitude = from_longitude
-        self.to_longitude = to_longitude
-        self.bus_stations = bus_stations
-        self.train_stations = train_stations
+    def __init__(self, from_loc, to_loc, bus_stations, train_stations):
+        try:
+            self.hafas_client = HafasClient(DBProfile())
+            self.from_location = self.hafas_client.locations(from_loc)[0]
+            self.to_location = self.hafas_client.locations(to_loc)[0]
+            self.bus_stations = bus_stations
+            self.train_stations = train_stations
+        except Exception as e: 
+            logger.warning("Cannot initialize PyhafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
 
     def initialize(self, commute_widget):
         pass
 
-    def _parse_route(self, route):
-        arrival = None
-        arrival_delay = None
-        result = {"bus": None, "train": None, "city": None, "bus_station": None, "train_station": None}
-        for leg in route["legs"]:
-            is_bus = "line" in leg and leg["line"]["mode"] == "bus"
-            is_train = "line" in leg and leg["line"]["mode"] == "train"
-            departure = dateutil.parser.parse(leg["departure"])
-            if is_bus and result["bus"] is None:
-                result["bus"] = departure
-                result["bus_station"] = self.bus_stations.get(leg["origin"]["name"], "*")
-                if result["bus_station"] == "*":
-                    logger.warning("Unknown bus station found: %s" % leg["origin"]["name"])
-                result["bus_delay"] = int(leg["departureDelay"])/60 if "departureDelay" in leg else 0
-            elif is_train and result["train"] is None:
-                result["train"] = departure
-                result["train_station"] = self.train_stations.get(leg["origin"]["name"], "*")
-                if result["train_station"] == "*":
-                    logger.warning("Unknown train station found: %s" % leg["origin"]["name"])
-                result["train_delay"] = int(leg["departureDelay"])/60 if "departureDelay" in leg else 0
-            arrival = dateutil.parser.parse(leg["arrival"])
-            arrival_delay = int(leg["arrivalDelay"])/60 if "arrivalDelay" in leg else 0
-        if result["train"] is not None:
-            result["city"] = arrival
-            result["city_delay"] = arrival_delay
-        return result
-
     def retrieve(self, commute_widget):
         try:
-            start = datetime.datetime.now()
-            vals = [self.from_address, self.from_latitude, self.from_longitude, self.to_address, self.to_latitude, self.to_longitude, str(int(start.timestamp())), str(commute_widget.num_routes)]
-            args = [urllib.parse.quote(val.encode('utf-8')) for val in vals]
-            suffix = "?from_address={}&from_latitude={}&from_longitude={}&to_address={}&to_latitude={}&to_longitude={}&departure={}&num_routes={}"
-            hafas_url = self.hafas_glue_service + suffix.format(*args)
-            with urllib.request.urlopen(hafas_url) as hafas_call:
-                commute_widget.data = json.loads(hafas_call.read().decode())
-                routes = [self._parse_route(route) for route in commute_widget.data]
-                commute_widget.routes = [route for route in routes if route["city"] is not None]
+            journeys = self.hafas_client.journeys(
+                origin=self.from_location,
+                destination=self.to_location,
+                date=datetime.datetime.now()
+            )
+            routes = []
+            for journey in journeys[:(3 if len(journeys) > 3 else len(journeys))]:
+                route = {
+                    "bus": None,
+                    "bus_station": None,
+                    "bus_delay": None,
+                    "train": None,
+                    "train_station": None,
+                    "train_delay": None,
+                    "city": None,
+                    "city_delay": None
+                }
+                for leg in journey.legs:
+                    if route["bus"] is None and route["train"] is None and (leg.mode == Mode.BUS or leg.name.startswith("Bus")):
+                        route["bus"] = leg.departure
+                        route["bus_delay"] = leg.departureDelay.total_seconds()/60 if leg.departureDelay is not None else 0
+                        route["bus_station"] = self.bus_stations.get(leg.origin.name, "*")
+                        if route["bus_station"] == "*":
+                            logger.warning("Unknown bus station found: %s" % leg.origin.name)
+                    elif route["train"] is None and (leg.mode == Mode.TRAIN):
+                        route["train"] = leg.departure
+                        route["train_delay"] = leg.departureDelay.total_seconds()/60 if leg.departureDelay is not None else 0
+                        route["train_station"] = self.train_stations.get(leg.origin.name, "*")
+                        if route["train_station"] == "*":
+                            logger.warning("Unknown train station found: %s" % leg.origin.name)
+                    route["city"] = leg.arrival
+                    route["city_delay"] = leg.arrivalDelay.total_seconds()/60 if leg.arrivalDelay is not None else 0
+                routes.append(route)
+            commute_widget.data = journeys
+            commute_widget.routes = routes
         except Exception as e: 
-            logger.warning("Cannot retrieve HafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
+            logger.warning("Cannot retrieve PyhafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
 
 
 class GoogleCommuteStrategy:

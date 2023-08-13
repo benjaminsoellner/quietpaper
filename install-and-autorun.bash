@@ -15,11 +15,13 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
     fi
 
     # install venv
-    if [ ! -d ./venv-quietpaper ]; then
-        python3 -m virtualenv venv-quietpaper
-        . venv-quietpaper/bin/activate
-        pip3 install -r requirements.txt
-        pip3 install MerossIot/
+    if [ ! -d ./venv3.9-quietpaper ]; then
+        python3.9 -m venv venv3.9-quietpaper
+        . venv3.9-quietpaper/bin/activate
+        pip install --upgrade "pip==23.2.1"
+        # I had problems installing Rust on Debian Stretch, so use an older version of 
+        # cryptography that doesn't require it.
+        CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install -r requirements.txt
         deactivate
     fi
 
@@ -42,23 +44,6 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         update-rc.d quietpaper defaults
     fi
 
-    # install dependencies for hafasglue
-    ( 
-        pushd ./hafas-glue >/dev/null 2>&1
-        npm install .
-        popd >/dev/null 
-    )
-    
-    # install hafasglue daemon
-    if [ ! -f /etc/init.d/hafasglue ]; then
-        cp ./hafasglued /etc/init.d/hafasglue
-        sed -i -e "s%@APPDIR@%$here%g" /etc/init.d/hafasglue
-        sed -i -e "s%@APPBIN@%$here/hafasglue.bash%g" /etc/init.d/hafasglue
-        chmod +x /etc/init.d/hafasglue
-        update-rc.d hafasglue defaults
-    fi
-
-    service hafasglue start
     service quietpaper start
 
     popd >/dev/null 2>&1
