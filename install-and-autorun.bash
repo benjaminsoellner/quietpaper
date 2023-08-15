@@ -19,8 +19,6 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         python3.9 -m venv venv3.9-quietpaper
         . venv3.9-quietpaper/bin/activate
         pip install --upgrade "pip==23.2.1"
-        # I had problems installing Rust on Debian Stretch, so use an older version of 
-        # cryptography that doesn't require it.
         pip install -r requirements.txt
         deactivate
     fi
