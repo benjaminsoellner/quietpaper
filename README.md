@@ -47,11 +47,14 @@ ended up incorporating into this project:
 ![The picture frame back with all the cabeling](docs/back.jpg)
 
 1. You need the following prequisites:
-* Raspbian Stretch Image
-* Python 3.9 Installation:
-  * [`albertogeniola/MerossIot`](https://github.com/albertogeniola/MerossIot) needs at least 3.7, but this caused Segmentation Faults on my Raspbian Stretch image whenever `asyncio` functionality was used
-  * Loosely follow these instructions and use an up-to-date Python 3.9.x patch version, e.gp. I used 3.9.17: https://gist.github.com/matthiasroos/3c8f1e0265eff6b60f6a7bcf701daa14)
+* Raspbian Bullseye Image with Python 3.9(.2) installation
 * Display connected to Raspberry
+* SPi interface enabled: type `sudo raspi-config` -> Interface Options -> SPI -> Yes.
+* The font with which displaying happens:
+```bash
+mkdir -p /usr/share/fonts/truetype/wqy/
+sudo curl https://github.com/anthonyfok/fonts-wqy-microhei/raw/master/wqy-microhei.ttc -o /usr/share/fonts/truetype/wqy/wqy-microhei.ttc
+```
 
 2. Next, if you want to use all widgets exactly in the layout I use you can just copy
 the folder `secret.template`, rename it to `secret` and open the config files within
@@ -67,6 +70,8 @@ process you need (once, you can uninstall those programs after the installation 
 ```bash
 sudo apt-get install libjpeg-dev zlib1g-dev # for installing pip Pillow from source
 sudo apt-get install python-dev libatlas-base-dev # for installing Numpy from source
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh # for installing cryptography from source --> Press "1"
+sudo apt-get install libssl-dev # also required for building cryptography
 ```
 
 5. You can then install the `quietpaper` daemon (Python app which updates the display) 

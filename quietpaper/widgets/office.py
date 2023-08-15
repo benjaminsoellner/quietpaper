@@ -3,10 +3,9 @@ import json
 import time
 import datetime
 import dateutil.parser
-from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from dateutil import tz
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from quietpaper import logger
 
 QP_OFFICE_WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
@@ -29,7 +28,7 @@ class GcalOfficeStrategy:
 
     def retrieve(self, office_widget, cycle):
         scope = ['https://www.googleapis.com/auth/calendar.readonly']
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
+        credentials = service_account.Credentials.from_service_account_file(self.auth_file).with_scopes(scope)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
         next_week = (datetime.datetime.utcnow() + datetime.timedelta(hours=24*7)).replace(tzinfo=tz.tzlocal())
         try:
@@ -67,10 +66,11 @@ class GsheetsOfficeStrategy:
         office_widget.flags = {}
     
     def retrieve(self, office_widget, cycle):
-        scope = ['https://spreadsheets.google.com/feeds',
-                'https://www.googleapis.com/auth/drive']
         try:
-            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
+            scope = ['https://spreadsheets.google.com/feeds',
+                    'https://www.googleapis.com/auth/spreadsheets',
+                    'https://www.googleapis.com/auth/drive']
+            credentials = service_account.Credentials.from_service_account_file(self.auth_file).with_scopes(scope)
             gsheets = gspread.authorize(credentials)
             workbook = gsheets.open(self.sheet_name).get_worksheet(0)
             value = workbook.acell(self.data_cell).value
@@ -78,7 +78,7 @@ class GsheetsOfficeStrategy:
                 self.data = None
             else:
                 self.data = json.loads(value)
-            if self.data is None or "Error" in self.data:
+            if self.data is None or "Error" in self.data or self.data.get("day_starts") == "UnauthorizedError":
                 office_widget.is_error = (self.data is not None and "Error" in self.data)
                 office_widget.published = None
                 office_widget.ordered_times = None
@@ -88,6 +88,7 @@ class GsheetsOfficeStrategy:
                 office_widget.published = datetime.datetime.strptime(self.data["published"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=tz.tzutc())
                 office_widget.ordered_times = []
                 office_widget.flags = {}
+                print(self.data)
                 for ymd in self.data["day_starts"]:
                     hms = self.data["day_starts"][ymd][0]
                     utc = datetime.datetime.strptime("%s %s" % (ymd, hms), "%Y-%m-%d %H:%M:%S")
@@ -166,3 +167,12 @@ class OfficeWidget:
             soon_minutes = self.soon_minutes_flag if flag else self.soon_minutes_noflag
             soon = datetime.datetime.now(tz.tzlocal()) + datetime.timedelta(minutes=soon_minutes)
             return event < soon
+
+if __name__ == "__main__":
+    office_auth_file_guy = office_auth_file_gal = "secret/homeprojects-d5131777a160.json"
+    office_sheet_name_guy = "goodmorning"
+    office_data_cell_guy = "B1"
+    office_gsheets_guy = GsheetsOfficeStrategy(office_auth_file_guy, office_sheet_name_guy, office_data_cell_guy)
+    office_guy = OfficeWidget(office_gsheets_guy, None, None, None)
+    office_guy.retrieve(0)
+

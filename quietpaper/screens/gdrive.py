@@ -1,5 +1,5 @@
 from apiclient.http import MediaFileUpload
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from apiclient import errors
 from quietpaper import logger
@@ -18,7 +18,7 @@ class GdriveScreen:
     def update(self, display, cycle):
         try:
             scope = ['https://www.googleapis.com/auth/drive']
-            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
+            credentials = service_account.Credentials.from_service_account_file(self.auth_file).with_scopes(scope)
             service = build('drive', 'v3', credentials=credentials)
             media_body = MediaFileUpload(self.file_locally, resumable=True)
             updated_file = service.files().update(

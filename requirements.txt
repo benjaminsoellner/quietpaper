@@ -1,9 +1,12 @@
-# for widgets.office
-gspread==3.1.0
-oauth2client==4.1.3
-cryptography==3.4.8 # allows to set CRYPTOGRAPHY_DONT_BUILD_RUST=1, possible until v3.5, PyOpenSSL requires only >=2.3
+# for widgets.office & widgets.calendar & screens.gdrive
+gspread==5.10.0
+google-auth==2.22.0
+cryptography==41.0.3
 PyOpenSSL==19.0.0
 python-dateutil==2.8.1
+cachetools==3.1.1
+google-api-python-client==2.96.0
+google-auth-oauthlib==0.4.1
 
 # for widgets.commute
 googlemaps==3.1.3
@@ -18,19 +21,13 @@ bs4==0.0.1
 # for widgets.allergy
 py-air-control==0.5.0
 
-# for widgets.calendar
-cachetools==3.1.1
-google-api-python-client==1.7.11
-google-auth-httplib2==0.0.3
-google-auth-oauthlib==0.4.1
-
 # for widgets.laundry
 meross_iot==0.4.5.9
 
 # for epd* and display
 # note: compiling Pillow from source needs "sudo apt-get install libjpeg-dev zlib1g-dev"
 Pillow==9.3.0 --no-binary Pillow
-RPi.GPIO==0.6.5
+RPi.GPIO==0.7.1
 spidev==3.4
 # note: compiling numpy from source needs "sudo apt-get install python-dev libatlas-base-dev"
 numpy==1.22.0 --no-binary numpy

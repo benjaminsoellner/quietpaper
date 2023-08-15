@@ -1,9 +1,9 @@
 import datetime
 import dateutil.parser
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from PIL import ImageFont
-from quietpaper import logger
+#from quietpaper import logger
 
 QP_CALENDAR_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
 
@@ -23,7 +23,7 @@ class CalendarWidget:
 
     def retrieve(self, cycle):
         scope = ['https://www.googleapis.com/auth/calendar.readonly']
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scope)
+        credentials = service_account.Credentials.from_service_account_file(self.auth_file).with_scopes(scope)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
         try:
             service = build('calendar', 'v3', credentials=credentials)
@@ -61,5 +61,3 @@ class CalendarWidget:
                 display.bmp(x, y, "icons/calendar.gif")
             display.text(x+4+(6 if day < 10 else 3), y+10, str(day), font=QP_CALENDAR_FONT)
             display.text(x+46, y+7, time+shortened)
-
-
