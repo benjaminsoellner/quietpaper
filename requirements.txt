@@ -22,7 +22,7 @@ bs4==0.0.1
 py-air-control==0.5.0
 
 # for widgets.laundry
-meross_iot==0.4.5.9
+meross_iot==0.4.6.2
 
 # for epd* and display
 # note: compiling Pillow from source needs "sudo apt-get install libjpeg-dev zlib1g-dev"

@@ -134,7 +134,7 @@ seperator_y1 = seperator_y2 = 62
 seperator = Seperator(seperator_x1, seperator_y1, seperator_x2, seperator_y2)
 
 # Laundry
-meross_connection = MerossConnection(secret("QP_MEROSS_EMAIL"), secret("QP_MEROSS_PASSWORD"))
+meross_connection = MerossConnection(secret("QP_MEROSS_EMAIL"), secret("QP_MEROSS_PASSWORD"), secret("QP_MEROSS_URL"))
 washing_machine = LaundryMachine(
     secret("QP_LAUNDRY_WASHING_MACHINE"),
     meross_connection,

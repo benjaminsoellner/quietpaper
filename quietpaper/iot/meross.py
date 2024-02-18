@@ -5,10 +5,11 @@ from quietpaper import logger
 
 class MerossConnection:
 
-    def __init__(self, meross_email, meross_password):
+    def __init__(self, meross_email, meross_password, meross_url):
         self.manager = None
         self.meross_email = meross_email
         self.meross_password = meross_password
+        self.meross_url = meross_url
         self.event_loop = asyncio.get_event_loop()
         self.http_api_client = None
         self.manager = None
@@ -23,15 +24,16 @@ class MerossConnection:
         self.http_api_client = None
     
     async def _async_connect(self):
-        try:
-            self.http_api_client = await MerossHttpClient.async_from_user_password(email=self.meross_email, password=self.meross_password)
+        #try:
+            self.http_api_client = await MerossHttpClient.async_from_user_password(
+                api_base_url=self.meross_url, email=self.meross_email, password=self.meross_password)
             self.manager = MerossManager(http_client=self.http_api_client)
             await self.manager.async_init()
             await self.manager.async_device_discovery()    
-        except Exception as ee:
-            logger.warning("Error initializing Meross Connection: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
-            self.http_api_client = None
-            self.manager = None
+        #except Exception as ee:
+        #    logger.warning("Error initializing Meross Connection: " + (ee.message if hasattr(ee, 'message') else type(ee).__name__))
+        #    self.http_api_client = None
+        #    self.manager = None
     
     async def _async_get_power_of_plug(self, plug_name):
         if self.manager is None or self.http_api_client is None:
