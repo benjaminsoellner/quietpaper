@@ -1,5 +1,6 @@
 import datetime
 import dateutil.parser
+from quietpaper import logger
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from PIL import ImageFont
@@ -31,6 +32,8 @@ class CalendarWidget:
                                                     maxResults=10, singleEvents=True, orderBy='startTime').execute()
             self.events = []
             for item in self.data.get('items', []):
+                if 'summary' not in item:
+                    continue
                 start = item['start'].get('dateTime', item['start'].get('date'))
                 self.events.append((dateutil.parser.parse(start), item['summary'], 'dateTime' in item['start']))
         except Exception as e:
