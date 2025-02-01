@@ -3,8 +3,11 @@ import json
 import datetime
 import dateutil.parser
 import itertools
+import os
+import subprocess
 from quietpaper import logger
 from dateutil import tz
+from dateutil import parser
 from PIL import ImageFont
 from pyhafas.profile import DBProfile
 from pyhafas import HafasClient
@@ -12,6 +15,77 @@ from pyhafas.types.fptf import Mode
 
 QP_COMMUTE_NUM_ROUTES = 3
 QP_COMMUTE_SMALL_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
+
+class DBClientCommuteStrategy:
+    def __init__(self, bus_stations, train_stations):
+        self.bus_stations = bus_stations
+        self.train_stations = train_stations
+    
+    def initialize(self, commute_widget):
+        pass
+
+    def _retrieve_from_dbclient(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        dbclient_dir = os.path.join(script_dir, "../../dbclient")
+        try:
+            result = subprocess.run(
+                ["/bin/bash", "--login", "-c", ". ~/.nvm/nvm.sh ; node dbclient.js"],
+                cwd=dbclient_dir,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            return json.loads(result.stdout)
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"dbclient.js failed with error: {e.stderr}")
+            raise RuntimeError("dbclient.js process failed") from e
+
+    def retrieve(self, commute_widget):
+        try:
+            journeys = self._retrieve_from_dbclient()["journeys"]
+            routes = []
+            for journey in journeys[:(3 if len(journeys) > 3 else len(journeys))]:
+                route = {
+                    "bus": None,
+                    "bus_station": None,
+                    "bus_delay": None,
+                    "train": None,
+                    "train_station": None,
+                    "train_delay": None,
+                    "city": None,
+                    "city_delay": None
+                }
+                for leg in journey["legs"]:
+                    line = leg.get("line", {})
+                    mode = line.get("mode", "")
+                    name = line.get("name", "")
+                    departure = None if "departure" not in leg else parser.parse(leg["departure"])
+                    departure_delay = leg.get("departureDelay", 0)
+                    arrival =  None if "departure" not in leg else parser.parse(leg["departure"])
+                    arrival_delay = leg.get("arrivalDelay", 0)
+                    origin = leg.get("origin", {}).get("name", "")
+                    if arrival is None or departure is None:
+                        logger.warning(f"Weird journey leg object found with name {name}, line {line}, mode {mode}, origin {origin}")
+                        continue
+                    if route["bus"] is None and route["train"] is None and (mode == "bus" or name.startswith("Bus")):
+                        route["bus"] = departure
+                        route["bus_delay"] = departure_delay/60 if departure_delay is not None else 0
+                        route["bus_station"] = self.bus_stations.get(origin, "*")
+                        if route["bus_station"] == "*":
+                            logger.warning("Unknown bus station found: %s" % origin)
+                    elif route["train"] is None and (mode == "train"):
+                        route["train"] = departure
+                        route["train_delay"] = departure_delay/60 if departure_delay is not None else 0
+                        route["train_station"] = self.train_stations.get(origin, "*")
+                        if route["train_station"] == "*":
+                            logger.warning("Unknown train station found: %s" % origin)
+                    route["city"] = arrival
+                    route["city_delay"] = arrival_delay/60 if arrival_delay is not None else 0
+                routes.append(route)
+            commute_widget.data = journeys
+            commute_widget.routes = routes
+        except Exception as e: 
+            logger.warning("Cannot retrieve DBClientStrategy: " + e)
 
 class PyhafasCommuteStrategy:
 
@@ -213,3 +287,17 @@ class CommuteWidget:
             if city_delay != "":
                 display.text(x+46+23+offset+44, y+13+104, city_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
             offset += 85
+
+if __name__ == "__main__":
+    with open("/home/dinkelpi/workspace/quietpaper/secret/_secrets.json", "r") as fd:
+        secrets = json.load(fd)
+    commute_bus_stations = secrets["QP_COMMUTE_BUS_STATIONS"]
+    commute_train_stations = secrets["QP_COMMUTE_TRAIN_STATIONS"]
+    commute_leave_for_bus = 10
+    commute_leave_for_train = 30
+    commute_x = 314
+    commute_y = 228
+    s = DBClientCommuteStrategy(commute_bus_stations, commute_train_stations)
+    w = CommuteWidget(s, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
+    s.retrieve(w)
+    print(w.routes)

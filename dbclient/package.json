@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "db-vendo-client": "^6.3.4"
+  }
+}

@@ -10,7 +10,7 @@ from quietpaper.widgets.office import (
 )
 from quietpaper.widgets.commute import (
     CommuteWidget,
-    PyhafasCommuteStrategy
+    DBClientCommuteStrategy
 )
 from quietpaper.widgets.room import RoomWidget
 from quietpaper.widgets.smog import SmogWidget
@@ -59,13 +59,10 @@ commute_leave_for_bus = 10
 commute_leave_for_train = 30
 commute_x = 314
 commute_y = 228
-commute_hafas_glue = "http://localhost:3333/query"
-commute_from_address = secret("QP_COMMUTE_FROM_ADDRESS")
-commute_to_address = secret("QP_COMMUTE_TO_ADDRESS")
 commute_bus_stations = secret("QP_COMMUTE_BUS_STATIONS")
 commute_train_stations = secret("QP_COMMUTE_TRAIN_STATIONS")
-commute_hafas = PyhafasCommuteStrategy(commute_from_address, commute_to_address, commute_bus_stations, commute_train_stations)
-commute = CommuteWidget(commute_hafas, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
+commute_dbclient = DBClientCommuteStrategy(commute_bus_stations, commute_train_stations)
+commute = CommuteWidget(commute_dbclient, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
 tado_client_secrets_file = secret("QP_TADO_CLIENT_SECRETS_FILE")

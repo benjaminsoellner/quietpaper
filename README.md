@@ -24,10 +24,9 @@ ended up incorporating into this project:
 * [`rgerganov/py-air-control`](https://github.com/rgerganov/py-air-control/) - Command
   Line App for controlling Philipps Air Purifier - modified version stored at 
   `quietpaper/iot/airctrl.py`
-* [`FahrplanDatenGarten/pyhafas`](https://github.com/FahrplanDatenGarten/pyhafas) - 
-  Hafas is the German "Deutsche Bahn" system that provides the electronic 
-  public transit timetables and this is a Python library for their
-  rather clunky XML Webservice.
+* [`public-transport/db-vendo-client`](https://github.com/public-transport/db-vendo-client) - 
+  provides Deutsche Bahn API calls for public transit timetables via NodeJS;
+  requires a NVM and NodeJS installation that is set up during `install-and-autorun.bash`
 * [`momorientes/istheutefeinstaubalarm`](https://github.com/momorientes/istheutefeinstaubalarm) - 
   my town Stuttgart, Germany provides "Smog Alerts" on which days we should 
   leave our cars at home, use public transit for lower price (in some cases
@@ -123,7 +122,6 @@ pointers about the repo's directory structure:
   the `trashday.py` widget
 * `doc` - contains artifacts for this document
 * `fonts` - fonts used on the display
-* `hafasglue` - logic for the hafasglue NodeJs servlet
 * `icons` - bmps and gifs of the icons displayed on screen (only bmps are actually
   used in the code)
 * `log` - directory where log is stored
