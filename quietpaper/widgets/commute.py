@@ -48,12 +48,12 @@ class DBClientCommuteStrategy:
                 route = {
                     "bus": None,
                     "bus_station": None,
-                    "bus_delay": None,
+                    "bus_delay": 0,
                     "train": None,
                     "train_station": None,
-                    "train_delay": None,
+                    "train_delay": 0,
                     "city": None,
-                    "city_delay": None
+                    "city_delay": 0
                 }
                 for leg in journey["legs"]:
                     line = leg.get("line", {})
@@ -85,7 +85,7 @@ class DBClientCommuteStrategy:
             commute_widget.data = journeys
             commute_widget.routes = routes
         except Exception as e: 
-            logger.warning("Cannot retrieve DBClientStrategy: " + e)
+            logger.warning(f"Cannot retrieve DBClientStrategy: {e}")
 
 class PyhafasCommuteStrategy:
 
