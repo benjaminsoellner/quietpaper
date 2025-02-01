@@ -26,7 +26,7 @@ meross_iot==0.4.7.5
 
 # for epd* and display
 # note: compiling Pillow from source needs "sudo apt-get install libjpeg-dev zlib1g-dev"
-Pillow==9.3.0 --no-binary Pillow
+Pillow==10.3.0 --no-binary Pillow
 RPi.GPIO==0.7.1
 spidev==3.4
 # note: compiling numpy from source needs "sudo apt-get install python-dev libatlas-base-dev"
