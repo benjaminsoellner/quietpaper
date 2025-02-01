@@ -59,14 +59,14 @@ class DBClientCommuteStrategy:
                     line = leg.get("line", {})
                     mode = line.get("mode", "")
                     name = line.get("name", "")
-                    departure = None if "departure" not in leg else parser.parse(leg["departure"])
+                    departure = None if leg.get("departure") is None else parser.parse(leg["departure"])
                     departure_delay = leg.get("departureDelay", 0)
-                    arrival =  None if "departure" not in leg else parser.parse(leg["departure"])
+                    arrival =  None if leg.get("departure") is None else parser.parse(leg["departure"])
                     arrival_delay = leg.get("arrivalDelay", 0)
                     origin = leg.get("origin", {}).get("name", "")
                     if arrival is None or departure is None:
-                        logger.warning(f"Weird journey leg object found with name {name}, line {line}, mode {mode}, origin {origin}")
-                        continue
+                        route = None
+                        break
                     if route["bus"] is None and route["train"] is None and (mode == "bus" or name.startswith("Bus")):
                         route["bus"] = departure
                         route["bus_delay"] = departure_delay/60 if departure_delay is not None else 0
@@ -81,7 +81,8 @@ class DBClientCommuteStrategy:
                             logger.warning("Unknown train station found: %s" % origin)
                     route["city"] = arrival
                     route["city_delay"] = arrival_delay/60 if arrival_delay is not None else 0
-                routes.append(route)
+                if route is not None:
+                    routes.append(route)
             commute_widget.data = journeys
             commute_widget.routes = routes
         except Exception as e: 
