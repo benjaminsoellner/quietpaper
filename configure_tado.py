@@ -26,5 +26,5 @@ token = requests.post(
     )
 ).json()
 
-with open("secret/tado-refresh-token.json", "w") as f:
+with open("output/tado-refresh-token.json", "w") as f:
     json.dump(token, f)

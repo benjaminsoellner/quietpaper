@@ -25,13 +25,16 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         deactivate
     fi
 
+    # configure tado
+    ./configure_tado.bash
+
     # create log and output directories
     if [[ ! -d ./log ]]; then
         mkdir -p log
         mkdir -p output
-        sudo chown :quietpaper log
-        sudo chown :quietpaper output
-        sudo chmod g+w log output 
+        sudo chown -R :quietpaper log
+        sudo chown -R :quietpaper output
+        sudo chmod -R g+w log output 
     fi
 
     # install quietpaper daemon
@@ -42,9 +45,6 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         sudo chmod +x /etc/init.d/quietpaper
         sudo update-rc.d quietpaper defaults
     fi
-
-    # configure tado
-    ./configure_tado.bash
 
     sudo service quietpaper start
 
