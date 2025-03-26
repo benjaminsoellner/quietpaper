@@ -65,10 +65,8 @@ commute_dbclient = DBClientCommuteStrategy(commute_bus_stations, commute_train_s
 commute = CommuteWidget(commute_dbclient, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
-tado_client_secrets_file = secret("QP_TADO_CLIENT_SECRETS_FILE")
-tado_username = secret("QP_TADO_USERNAME")
-tado_password = secret("QP_TADO_PASSWORD")
-tado = TadoConnection(tado_client_secrets_file, tado_username, tado_password)
+tado_refresh_token_file = secret("QP_TADO_REFRESH_TOKEN_FILE")
+tado = TadoConnection(tado_refresh_token_file)
 
 # Room widget
 room_y_offset = 0

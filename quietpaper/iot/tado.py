@@ -4,40 +4,39 @@ import datetime
 import json
 
 class TadoConnection:
-    def __init__(self, client_secrets_file, username, password):
-        with open(client_secrets_file, "r") as fd:
-            self.client_secret = json.load(fd)["secret"]
-        self.username = username
-        self.password = password
-        self.bearer_token = None
-        self.bearer_token_expires = None
+    def __init__(self, refresh_token_file):
+        self.refresh_token_file = refresh_token_file
+        self.access_token = None
+        self.access_token_expires = None
+        self.refresh_token = None
         self.home_id = None
         self.zones = None
     
-    def acquire_bearer_token(self):
-        data = {
-            "client_id": "tado-web-app",
-            "grant_type": "password",
-            "scope": "home.user",
-            "username": self.username,
-            "password": self.password,
-            "client_secret": self.client_secret
-        }
-        response = requests.post(url="https://auth.tado.com/oauth/token", data=data)
-        self.bearer_token = json.loads(response.text)
-        self.bearer_token_expires = datetime.datetime.now() + datetime.timedelta(seconds=self.bearer_token["expires_in"])
+    def acquire_new_tokens(self):
+        with open(self.refresh_token_file, "r") as fd:
+            self.refresh_token = json.load(fd)["refresh_token"]
+        token = requests.post(
+            "https://login.tado.com/oauth2/token",
+            params=dict(
+                client_id="1bb50063-6b0c-4d11-bd99-387f4a91cc46",
+                grant_type="refresh_token",
+                refresh_token=self.refresh_token,
+            ),
+        ).json()
+        self.refresh_token = token["refresh_token"]
+        self.access_token = token["access_token"]
+        self.access_token_expires = datetime.datetime.now() + datetime.timedelta(seconds=token["expires_in"])
+        with open(self.refresh_token_file, "w") as fd:
+            json.dump(token, fd)
 
     def get_bearer_token(self):
-        if self.bearer_token is None or datetime.datetime.now() > self.bearer_token_expires:
-            self.acquire_bearer_token()
-        return self.bearer_token
-    
-    def get_access_token(self):
-        return self.get_bearer_token()["access_token"]
+        if self.access_token is None or datetime.datetime.now() > self.access_token_expires:
+            self.acquire_new_tokens()
+        return self.access_token
     
     def query(self, url):
         try:
-            headers = { "Authorization": "Bearer %s" % self.get_access_token() }
+            headers = { "Authorization": "Bearer %s" % self.get_bearer_token() }
             response = requests.get(url=url, headers=headers)
             return json.loads(response.text)
         except Exception as e:

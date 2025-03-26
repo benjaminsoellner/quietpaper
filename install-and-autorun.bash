@@ -43,6 +43,9 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         sudo update-rc.d quietpaper defaults
     fi
 
+    # configure tado
+    ./configure_tado.bash
+
     sudo service quietpaper start
 
     popd >/dev/null 2>&1

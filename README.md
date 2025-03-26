@@ -79,6 +79,11 @@ by calling:
 ./install-and-autorun.bash
 ```
 
+During the installation process `configure_tado.bash` will be automatically called
+which will set up the browser-based device authentication with Tado. You will need
+to manually re-authenticate with Tado if you do not use / refresh your Quietpaper
+display and its associated Tado connection for 30 days.
+
 6. The display will now load! - You can start/stop/restart the daemons by calling
 ```bash
 sudo service {start|stop|restart} quietpaper
