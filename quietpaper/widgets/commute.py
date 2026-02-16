@@ -67,13 +67,13 @@ class DBClientCommuteStrategy:
                     if arrival is None or departure is None:
                         route = None
                         break
-                    if route["bus"] is None and route["train"] is None and (mode == "bus" or name.startswith("Bus")):
+                    if route["bus"] is None and route["train"] is None and ((mode == "bus" or name.startswith("Bus")) and "SEV" not in name):
                         route["bus"] = departure
                         route["bus_delay"] = departure_delay/60 if departure_delay is not None else 0
                         route["bus_station"] = self.bus_stations.get(origin, "*")
                         if route["bus_station"] == "*":
                             logger.warning("Unknown bus station found: %s" % origin)
-                    elif route["train"] is None and (mode == "train"):
+                    elif route["train"] is None and (mode == "train" or "SEV" in name):
                         route["train"] = departure
                         route["train_delay"] = departure_delay/60 if departure_delay is not None else 0
                         route["train_station"] = self.train_stations.get(origin, "*")
@@ -277,14 +277,15 @@ class CommuteWidget:
                 display.text(x+46+offset+bus_station_offset, y+7, route["bus"].strftime("%H:%M"), is_red)
                 if bus_delay != "":
                     display.text(x+46+offset+bus_station_offset+44, y+13, bus_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
-            is_red = route["train"].replace(tzinfo=tz.tzlocal()) < deadline_train.replace(tzinfo=tz.tzlocal()) and route["bus"] is None
-            train_station_offset = (7 if train_station != "" else 0)
-            if train_station != "":
-                display.text(x+46+11+offset, y+13+52, train_station, is_red, font=QP_COMMUTE_SMALL_FONT)
-            display.text(x+46+11+offset+train_station_offset, y+7+52, route["train"].strftime("%H:%M"), is_red)
-            if train_delay != "":
-                display.text(x+46+11+offset+train_station_offset+44, y+13+52, train_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
-            display.text(x+46+23+offset, y+7+104, route["city"].strftime("%H:%M"))
+            if route["train"] is not None:
+                is_red = route["train"].replace(tzinfo=tz.tzlocal()) < deadline_train.replace(tzinfo=tz.tzlocal()) and route["bus"] is None
+                train_station_offset = (7 if train_station != "" else 0)
+                if train_station != "":
+                    display.text(x+46+11+offset, y+13+52, train_station, is_red, font=QP_COMMUTE_SMALL_FONT)
+                display.text(x+46+11+offset+train_station_offset, y+7+52, route["train"].strftime("%H:%M"), is_red)
+                if train_delay != "":
+                    display.text(x+46+11+offset+train_station_offset+44, y+13+52, train_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
+                display.text(x+46+23+offset, y+7+104, route["city"].strftime("%H:%M"))
             if city_delay != "":
                 display.text(x+46+23+offset+44, y+13+104, city_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
             offset += 85
