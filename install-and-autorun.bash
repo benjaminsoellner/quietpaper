@@ -12,8 +12,9 @@ here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
         sudo mkdir -p /home/quietpaper
         sudo chown quietpaper:quietpaper /home/quietpaper
         sudo chown :quietpaper . -R
+        sudo chmod -R g+w dbclient
         sudo -H -u quietpaper /bin/bash --login -c "touch ~/.bashrc ; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
-        sudo -H -u quietpaper /bin/bash --login -c "nvm install v18.20.6 ; node install $here/dbclient/"
+        sudo -H -u quietpaper /bin/bash --login -c ". ~/.nvm/nvm.sh ; nvm install v18.20.6 ; cd $here/dbclient/ ; npm install ."
     fi
 
     # install venv
