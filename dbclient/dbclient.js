@@ -1,5 +1,5 @@
 import { createClient } from 'db-vendo-client';
-import { profile as dbProfile } from 'db-vendo-client/p/db/index.js';
+import { profile as dbnavProfile } from 'db-vendo-client/p/db/index.js';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
@@ -20,7 +20,7 @@ async function main() {
     }
 
     const userAgent = 'post@benkku.com';
-    const client = createClient(dbProfile, userAgent);
+    const client = createClient(dbnavProfile, userAgent);
     const secrets = await getSecrets();
     
     try {
