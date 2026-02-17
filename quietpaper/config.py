@@ -61,7 +61,9 @@ commute_x = 314
 commute_y = 228
 commute_bus_stations = secret("QP_COMMUTE_BUS_STATIONS")
 commute_train_stations = secret("QP_COMMUTE_TRAIN_STATIONS")
-commute_dbclient = DBClientCommuteStrategy(commute_bus_stations, commute_train_stations)
+commute_from = secret("QP_COMMUTE_FROM_OBJECT")
+commute_to = secret("QP_COMMUTE_TO_OBJECT")
+commute_dbclient = DBClientCommuteStrategy(commute_from, commute_to, commute_bus_stations, commute_train_stations)
 commute = CommuteWidget(commute_dbclient, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection

@@ -3,8 +3,7 @@ import json
 import datetime
 import dateutil.parser
 import itertools
-import os
-import subprocess
+import requests
 from quietpaper import logger
 from dateutil import tz
 from dateutil import parser
@@ -15,34 +14,34 @@ from pyhafas.types.fptf import Mode
 
 QP_COMMUTE_NUM_ROUTES = 3
 QP_COMMUTE_SMALL_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
+QP_TRANSPORT_REST_URL = "https://v6.db.transport.rest/journeys"
 
 class DBClientCommuteStrategy:
-    def __init__(self, bus_stations, train_stations):
+    def __init__(self, commute_from, commute_to, bus_stations, train_stations):
+        self.commute_from = commute_from
+        self.commute_to = commute_to
         self.bus_stations = bus_stations
         self.train_stations = train_stations
-    
+
     def initialize(self, commute_widget):
         pass
 
-    def _retrieve_from_dbclient(self):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        dbclient_dir = os.path.join(script_dir, "../../dbclient")
-        try:
-            result = subprocess.run(
-                ["/bin/bash", "--login", "-c", ". ~/.nvm/nvm.sh ; node dbclient.js"],
-                cwd=dbclient_dir,
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            return json.loads(result.stdout)
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"dbclient.js failed with error: {e.stderr}")
-            raise RuntimeError("dbclient.js process failed") from e
+    def _retrieve_from_transportrest(self):
+        params = {
+           "from.latitude": self.commute_from["latitude"],
+           "from.longitude": self.commute_from["longitude"],
+           "from.address": self.commute_from["address"],
+           "to.latitude": self.commute_to["latitude"],
+           "to.longitude": self.commute_to["longitude"],
+           "to.address": self.commute_to["address"],
+        }
+        response = requests.get(QP_TRANSPORT_REST_URL, params=params, timeout=20)
+        response.raise_for_status()
+        return response.json()["journeys"]
 
     def retrieve(self, commute_widget):
         try:
-            journeys = self._retrieve_from_dbclient()["journeys"]
+            journeys = self._retrieve_from_transportrest()
             routes = []
             for journey in journeys[:(3 if len(journeys) > 3 else len(journeys))]:
                 route = {
@@ -289,17 +288,3 @@ class CommuteWidget:
             if city_delay != "":
                 display.text(x+46+23+offset+44, y+13+104, city_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
             offset += 85
-
-if __name__ == "__main__":
-    with open("/home/dinkelpi/workspace/quietpaper/secret/_secrets.json", "r") as fd:
-        secrets = json.load(fd)
-    commute_bus_stations = secrets["QP_COMMUTE_BUS_STATIONS"]
-    commute_train_stations = secrets["QP_COMMUTE_TRAIN_STATIONS"]
-    commute_leave_for_bus = 10
-    commute_leave_for_train = 30
-    commute_x = 314
-    commute_y = 228
-    s = DBClientCommuteStrategy(commute_bus_stations, commute_train_stations)
-    w = CommuteWidget(s, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
-    s.retrieve(w)
-    print(w.routes)

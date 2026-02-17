@@ -24,9 +24,8 @@ ended up incorporating into this project:
 * [`rgerganov/py-air-control`](https://github.com/rgerganov/py-air-control/) - Command
   Line App for controlling Philipps Air Purifier - modified version stored at 
   `quietpaper/iot/airctrl.py`
-* [`public-transport/db-vendo-client`](https://github.com/public-transport/db-vendo-client) - 
-  provides Deutsche Bahn API calls for public transit timetables via NodeJS;
-  requires a NVM and NodeJS installation that is set up during `install-and-autorun.bash`
+* [`transport.rest`](https://v6.db.transport.rest) - A sleak public REST API that can be
+  easily consumed in order to get public transport info without any software dependency
 * [`momorientes/istheutefeinstaubalarm`](https://github.com/momorientes/istheutefeinstaubalarm) - 
   my town Stuttgart, Germany provides "Smog Alerts" on which days we should 
   leave our cars at home, use public transit for lower price (in some cases
