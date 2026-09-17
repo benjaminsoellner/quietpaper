@@ -10,7 +10,7 @@ from quietpaper.widgets.office import (
 )
 from quietpaper.widgets.commute import (
     CommuteWidget,
-    DBClientCommuteStrategy
+    TransitousCommuteStrategy
 )
 from quietpaper.widgets.room import RoomWidget
 from quietpaper.widgets.smog import SmogWidget
@@ -63,8 +63,8 @@ commute_bus_stations = secret("QP_COMMUTE_BUS_STATIONS")
 commute_train_stations = secret("QP_COMMUTE_TRAIN_STATIONS")
 commute_from = secret("QP_COMMUTE_FROM_OBJECT")
 commute_to = secret("QP_COMMUTE_TO_OBJECT")
-commute_dbclient = DBClientCommuteStrategy(commute_from, commute_to, commute_bus_stations, commute_train_stations)
-commute = CommuteWidget(commute_dbclient, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
+commute_transitous = TransitousCommuteStrategy(commute_from, commute_to, commute_bus_stations, commute_train_stations)
+commute = CommuteWidget(commute_transitous, commute_leave_for_bus, commute_leave_for_train, commute_x, commute_y)
 
 # Tado Connection
 tado_refresh_token_file = secret("QP_TADO_REFRESH_TOKEN_FILE")
@@ -153,7 +153,7 @@ mock = MockScreen(mock_png)
 #mock_continuous = MockScreen(mock_continuous_png, add_date=True)
 
 # EpaperScreen
-epaper = EpaperScreen(version=3)
+epaper = EpaperScreen(version=2)
 
 # GdriveScreen
 gdrive_auth_file = secret("QP_GDRIVE_AUTH_FILE")

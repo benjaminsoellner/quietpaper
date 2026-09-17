@@ -24,8 +24,9 @@ ended up incorporating into this project:
 * [`rgerganov/py-air-control`](https://github.com/rgerganov/py-air-control/) - Command
   Line App for controlling Philipps Air Purifier - modified version stored at 
   `quietpaper/iot/airctrl.py`
-* [`transport.rest`](https://v6.db.transport.rest) - A sleak public REST API that can be
+* [Transitous.org API](https://transitous.org/api/) - A sleak public REST API that can be
   easily consumed in order to get public transport info without any software dependency
+  ([Data Sources](https://transitous.org/sources/) include [OpenStreetMap Data](https://www.openstreetmap.org/copyright])).
 * [`momorientes/istheutefeinstaubalarm`](https://github.com/momorientes/istheutefeinstaubalarm) - 
   my town Stuttgart, Germany provides "Smog Alerts" on which days we should 
   leave our cars at home, use public transit for lower price (in some cases
@@ -36,6 +37,8 @@ ended up incorporating into this project:
   to access power consumption data of the Meross Smart Home Power Plugs
 * [Tado API Guide - updated for 2019](https://shkspr.mobi/blog/2019/02/tado-api-guide-updated-for-2019/) - 
   huge help in understanding how to query the undocumented API of my tado thermostats.
+  Unfortunately the Tado API is [rate-limited as of beginning-of-2025](https://support.tado.com/en/articles/12165739-limitation-for-rest-api-usage)
+  so additional code was added to cache requests to the backend and only query stats every 15mins.
 * [Tutorial on Programming a Waveshare 7.5-Inch Multi-Color e-Paper Display & Info-Frame](https://www.youtube.com/watch?v=mr6Lt0gKjsI&t=200s) - 
   very great tutorial to get started with the Waveshare. I took the Weather-Display logic
   directly from that tutorial.

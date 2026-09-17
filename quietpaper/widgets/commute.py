@@ -1,22 +1,16 @@
 import googlemaps
-import json
 import datetime
-import dateutil.parser
-import itertools
 import requests
 from quietpaper import logger
 from dateutil import tz
 from dateutil import parser
 from PIL import ImageFont
-from pyhafas.profile import DBProfile
-from pyhafas import HafasClient
-from pyhafas.types.fptf import Mode
 
 QP_COMMUTE_NUM_ROUTES = 3
 QP_COMMUTE_SMALL_FONT = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-microhei.ttc', 12)
-QP_TRANSPORT_REST_URL = "https://v6.db.transport.rest/journeys"
+QP_TRANSITOUS_URL = "https://api.transitous.org/api/v6/plan"
 
-class DBClientCommuteStrategy:
+class TransitousCommuteStrategy:
     def __init__(self, commute_from, commute_to, bus_stations, train_stations):
         self.commute_from = commute_from
         self.commute_to = commute_to
@@ -26,22 +20,19 @@ class DBClientCommuteStrategy:
     def initialize(self, commute_widget):
         pass
 
-    def _retrieve_from_transportrest(self):
+    def _retrieve_from_transitous(self):
         params = {
-           "from.latitude": self.commute_from["latitude"],
-           "from.longitude": self.commute_from["longitude"],
-           "from.address": self.commute_from["address"],
-           "to.latitude": self.commute_to["latitude"],
-           "to.longitude": self.commute_to["longitude"],
-           "to.address": self.commute_to["address"],
+           "fromPlace": f'{self.commute_from["latitude"]},{self.commute_from["longitude"]}',
+           "toPlace": f'{self.commute_to["latitude"]},{self.commute_to["longitude"]}'
         }
-        response = requests.get(QP_TRANSPORT_REST_URL, params=params, timeout=20)
+        headers = {"User-Agent": "https://github.com/benjaminsoellner/quietpaper"}
+        response = requests.get(QP_TRANSITOUS_URL, params=params, headers=headers, timeout=20)
         response.raise_for_status()
-        return response.json()["journeys"]
+        return response.json().get("itineraries", {})
 
     def retrieve(self, commute_widget):
         try:
-            journeys = self._retrieve_from_transportrest()
+            journeys = self._retrieve_from_transitous()
             routes = []
             for journey in journeys[:(3 if len(journeys) > 3 else len(journeys))]:
                 route = {
@@ -55,24 +46,27 @@ class DBClientCommuteStrategy:
                     "city_delay": 0
                 }
                 for leg in journey["legs"]:
-                    line = leg.get("line", {})
-                    mode = line.get("mode", "")
-                    name = line.get("name", "")
-                    departure = None if leg.get("departure") is None else parser.parse(leg["departure"])
-                    departure_delay = leg.get("departureDelay", 0)
-                    arrival =  None if leg.get("departure") is None else parser.parse(leg["departure"])
-                    arrival_delay = leg.get("arrivalDelay", 0)
-                    origin = leg.get("origin", {}).get("name", "")
+                    mode = leg.get("mode", "")
+                    name = leg.get("routeShortName", "")
+                    leg_from = leg.get("from", {})
+                    leg_to = leg.get("to", {})
+                    origin = leg_from.get("name", "")
+                    departure = parser.parse(leg_from["departure"]).astimezone(tz.tzlocal()) if "departure" in leg_from else None
+                    scheduled_departure = parser.parse(leg_from["scheduledDeparture"]).astimezone(tz.tzlocal()) if "scheduledDeparture" in leg_from else None
+                    departure_delay = (departure - scheduled_departure).total_seconds() if departure is not None and scheduled_departure is not None else 0
+                    arrival = parser.parse(leg_to["arrival"]).astimezone(tz.tzlocal()) if "arrival" in leg_to else None
+                    scheduled_arrival = parser.parse(leg_to["scheduledArrival"]).astimezone(tz.tzlocal()) if "scheduledArrival" in leg_to else None
+                    arrival_delay = (arrival - scheduled_arrival).total_seconds() if arrival is not None and scheduled_arrival is not None else 0
                     if arrival is None or departure is None:
                         route = None
                         break
-                    if route["bus"] is None and route["train"] is None and ((mode == "bus" or name.startswith("Bus")) and "SEV" not in name):
+                    if route["bus"] is None and route["train"] is None and ((mode == "BUS" or name.startswith("Bus")) and "SEV" not in name):
                         route["bus"] = departure
                         route["bus_delay"] = departure_delay/60 if departure_delay is not None else 0
                         route["bus_station"] = self.bus_stations.get(origin, "*")
                         if route["bus_station"] == "*":
                             logger.warning("Unknown bus station found: %s" % origin)
-                    elif route["train"] is None and (mode == "train" or "SEV" in name):
+                    elif route["train"] is None and (mode in ["TRAIN", "TRAM", "SUBURBAN"] or "SEV" in name):
                         route["train"] = departure
                         route["train_delay"] = departure_delay/60 if departure_delay is not None else 0
                         route["train_station"] = self.train_stations.get(origin, "*")
@@ -85,143 +79,7 @@ class DBClientCommuteStrategy:
             commute_widget.data = journeys
             commute_widget.routes = routes
         except Exception as e: 
-            logger.warning(f"Cannot retrieve DBClientStrategy: {e}")
-
-class PyhafasCommuteStrategy:
-
-    def __init__(self, from_loc, to_loc, bus_stations, train_stations):
-        try:
-            self.hafas_client = HafasClient(DBProfile())
-            self.from_location = self.hafas_client.locations(from_loc)[0]
-            self.to_location = self.hafas_client.locations(to_loc)[0]
-            self.bus_stations = bus_stations
-            self.train_stations = train_stations
-        except Exception as e: 
-            logger.warning("Cannot initialize PyhafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
-
-    def initialize(self, commute_widget):
-        pass
-
-    def retrieve(self, commute_widget):
-        try:
-            journeys = self.hafas_client.journeys(
-                origin=self.from_location,
-                destination=self.to_location,
-                date=datetime.datetime.now()
-            )
-            routes = []
-            for journey in journeys[:(3 if len(journeys) > 3 else len(journeys))]:
-                route = {
-                    "bus": None,
-                    "bus_station": None,
-                    "bus_delay": None,
-                    "train": None,
-                    "train_station": None,
-                    "train_delay": None,
-                    "city": None,
-                    "city_delay": None
-                }
-                for leg in journey.legs:
-                    if route["bus"] is None and route["train"] is None and (leg.mode == Mode.BUS or leg.name.startswith("Bus")):
-                        route["bus"] = leg.departure
-                        route["bus_delay"] = leg.departureDelay.total_seconds()/60 if leg.departureDelay is not None else 0
-                        route["bus_station"] = self.bus_stations.get(leg.origin.name, "*")
-                        if route["bus_station"] == "*":
-                            logger.warning("Unknown bus station found: %s" % leg.origin.name)
-                    elif route["train"] is None and (leg.mode == Mode.TRAIN):
-                        route["train"] = leg.departure
-                        route["train_delay"] = leg.departureDelay.total_seconds()/60 if leg.departureDelay is not None else 0
-                        route["train_station"] = self.train_stations.get(leg.origin.name, "*")
-                        if route["train_station"] == "*":
-                            logger.warning("Unknown train station found: %s" % leg.origin.name)
-                    route["city"] = leg.arrival
-                    route["city_delay"] = leg.arrivalDelay.total_seconds()/60 if leg.arrivalDelay is not None else 0
-                routes.append(route)
-            commute_widget.data = journeys
-            commute_widget.routes = routes
-        except Exception as e: 
-            logger.warning("Cannot retrieve PyhafasCommuteStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
-
-
-class GoogleCommuteStrategy:
-
-    def __init__(self, api_key_file, from_loc, to_loc):
-        self.api_key = json.load(open(api_key_file, "r"))["key"]
-        self.from_loc = from_loc
-        self.to_loc = to_loc
-
-    @staticmethod
-    def _is_train(step):
-        return step["travel_mode"] == "TRANSIT" and step["transit_details"]["line"]["vehicle"]["type"] == "COMMUTER_TRAIN"
-
-    @staticmethod
-    def _is_bus(step):
-        return step["travel_mode"] == "TRANSIT" and step["transit_details"]["line"]["vehicle"]["type"] == "BUS"
-
-    @staticmethod
-    def _get_departure(step):
-        return datetime.datetime.fromtimestamp(step["transit_details"]["departure_time"]["value"])
-
-    @staticmethod
-    def _get_arrival(leg):
-        return datetime.datetime.fromtimestamp(leg["arrival_time"]["value"])
-
-    def _parse_route(legs):
-        steps = [leg["steps"] for leg in legs]
-        route = {"bus": None, "train": None, "city": None}
-        for step in list(itertools.chain.from_iterable(steps)):
-            if GoogleCommuteStrategy._is_bus(step) and route["bus"] is None:
-                route["bus"] = GoogleCommuteStrategy._get_departure(step)
-            elif GoogleCommuteStrategy._is_train(step) and route["train"] is None:
-                route["train"] = GoogleCommuteStrategy._get_departure(step)
-        if route["train"] is not None:
-            route["city"] = GoogleCommuteStrategy._get_arrival(legs[-1]) if len(legs)>0 else None
-        return route
-
-    def initialize(self, commute_widget):
-        self.gmaps = googlemaps.client.Client(key=self.api_key)
-    
-    def retrieve(self, commute_widget):
-        start_time = datetime.datetime.now()
-        known_departure = None if len(commute_widget.routes) == 0 \
-            else commute_widget.routes[0]["bus"] if commute_widget.routes[0]["bus"] is not None else commute_widget.routes[0]["train"]
-        if known_departure is not None and known_departure > start_time:
-            return
-        try:
-            commute_widget.data = []
-            commute_widget.routes = []
-            routes_found = 0
-            trials = 0
-            too_late = False
-            fallback_route = None
-            while routes_found < commute_widget.num_routes and trials < 10 and not too_late:
-                trials += 1
-                data = self.gmaps.directions(self.from_loc, self.to_loc, mode="transit", departure_time=start_time)
-                routes = [GoogleCommuteStrategy._parse_route(route["legs"]) for route in data]
-                commute_widget.data.append(data)
-                for route in routes:
-                    if route is not None and route["train"] is not None:
-                        if routes_found == commute_widget.num_routes-1:
-                            if sum([1 for route in commute_widget.routes+[route] if route["bus"] is not None]) > 0:
-                                append_route = True
-                            else:
-                                fallback_route = route
-                                append_route = False
-                        else:
-                            append_route = True
-                        if append_route:
-                            routes_found += 1
-                            commute_widget.routes.append(route)
-                        new_start_time = route["bus"] if route["bus"] is not None else route["train"]
-                        if new_start_time != start_time:
-                            start_time = new_start_time
-                        else:
-                            too_late = True
-            if routes_found < commute_widget.num_routes and fallback_route is not None:
-                self.routes.append(fallback_route)
-        except Exception as e: 
-            logger.warning("Cannot retrieve GoogleStrategy: " + (e.message if hasattr(e, 'message') else type(e).__name__))
-
+            logger.warning(f"Cannot retrieve TransitousCommuteStrategy: {e}")
 
 class CommuteWidget:
 
@@ -250,7 +108,7 @@ class CommuteWidget:
         return 1
 
     def render(self, display, cycle):
-        now = datetime.datetime.now().replace()
+        now = datetime.datetime.now()
         deadline_bus   = now + datetime.timedelta(minutes=self.leave_for_bus)
         deadline_train = now + datetime.timedelta(minutes=self.leave_for_train)
         x = self.x
@@ -284,7 +142,8 @@ class CommuteWidget:
                 display.text(x+46+11+offset+train_station_offset, y+7+52, route["train"].strftime("%H:%M"), is_red)
                 if train_delay != "":
                     display.text(x+46+11+offset+train_station_offset+44, y+13+52, train_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
+            if route["city"] is not None:
                 display.text(x+46+23+offset, y+7+104, route["city"].strftime("%H:%M"))
-            if city_delay != "":
-                display.text(x+46+23+offset+44, y+13+104, city_delay, is_red, font=QP_COMMUTE_SMALL_FONT)
+                if city_delay != "":
+                    display.text(x+46+23+offset+44, y+13+104, city_delay, font=QP_COMMUTE_SMALL_FONT)
             offset += 85
