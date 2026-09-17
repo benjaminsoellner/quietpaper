@@ -22,8 +22,8 @@ class RoomWidget:
         
     def retrieve(self, cycle):
         try:
-            if self.tado_connection.init_home():
-                data = self.tado_connection.query_home("zones/%d/state" % self.zone)
+            if self.tado_connection.query_home():
+                data = self.tado_connection.query_zones().get("zoneStates", {}).get('%s' % self.zone)
                 self.data = data
                 if data is not None:
                     if "sensorDataPoints" in data:

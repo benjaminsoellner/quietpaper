@@ -4,13 +4,15 @@ import datetime
 import json
 
 class TadoConnection:
-    def __init__(self, refresh_token_file):
+    def __init__(self, refresh_token_file, api_ratelimit_minutes=15):
         self.refresh_token_file = refresh_token_file
         self.access_token = None
         self.access_token_expires = None
         self.refresh_token = None
         self.home_id = None
-        self.zones = None
+        self.zones_updated_every = api_ratelimit_minutes
+        self.zones_last_updated = None
+        self.zones_cache = None
     
     def acquire_new_tokens(self):
         with open(self.refresh_token_file, "r") as fd:
@@ -44,17 +46,29 @@ class TadoConnection:
             return None
     
     def init_home(self):
-        details = self.query("https://my.tado.com/api/v1/me")
-        if details is not None and "homeId" in details:
-            self.home_id = details["homeId"]
+        details = self.query("https://my.tado.com/api/v2/me")
+        if details is not None and "homes" in details and len(details["homes"]) > 0:
+            self.home_id = details["homes"][0]["id"]
             return True
         else:
             return False
     
-    def query_home(self, url_suffix):
+    def query_home(self, force_reinit=False):
+        if self.home_id is None or force_reinit:
+            return self.init_home()
+        else:
+            return True
+    
+    def query_zones(self, force_update=False):
         if self.home_id is None:
             self.init_home()
         if self.home_id is not None:
-            return self.query("https://my.tado.com/api/v2/homes/%s/%s" % (self.home_id, url_suffix))
+            if force_update or self.zones_cache is None or self.zones_last_updated is None or (datetime.datetime.now() - self.zones_last_updated).total_seconds() > self.zones_updated_every * 60:
+                self.zones_cache = self.query("https://my.tado.com/api/v2/homes/%s/zoneStates" % self.home_id)
+                self.zones_last_updated = datetime.datetime.now()
+            if self.zones_cache is None:
+                self.zones_cache = {}
         else:
-            return None
+            self.zones_cache = {}
+        return self.zones_cache
+
